@@ -21,7 +21,7 @@ jobs:
           node-version: 18
 
       - name: Instalar dependências
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Rodar testes
         run: npm test
