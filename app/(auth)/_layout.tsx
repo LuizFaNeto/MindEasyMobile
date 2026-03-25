@@ -1,11 +1,9 @@
 import { Tabs } from 'expo-router';
-import { Home, Calendar, User } from 'lucide-react-native';
-import { Stack } from 'expo-router';
-import { PaperProvider } from 'react-native-paper';
+import { Calendar, Home, User } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ 
+    <Tabs screenOptions={{
       tabBarActiveTintColor: '#6200ee', // Cor do ícone selecionado (estilo RN Paper)
       headerShown: false               // Mostra o título da página no topo
     }}>
@@ -13,21 +11,21 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Início',
-          tabBarIcon: ({ color }) => <Home color={color} size={24} />,
+          tabBarIcon: ({ color }) => <Home stroke={color} size={24} />,
         }}
       />
       <Tabs.Screen
         name="calendar"
         options={{
           title: 'Consultas',
-          tabBarIcon: ({ color }) => <Calendar color={color} size={24} />,
+          tabBarIcon: ({ color }) => <Calendar stroke={color} size={24} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Meu Perfil',
-          tabBarIcon: ({ color }) => <User color={color} size={24} />,
+          tabBarIcon: ({ color }) => <User stroke={color} size={24} />,
         }}
       />
     </Tabs>

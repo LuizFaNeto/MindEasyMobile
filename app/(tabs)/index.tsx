@@ -1,15 +1,50 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
-import { Text, Searchbar, Card, Avatar, IconButton } from 'react-native-paper';
+import React, { useState, useMemo } from 'react';
+import { View, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
+import { Text, Badge } from 'react-native-paper';
 import { useUserStore } from '../../store/userStore';
 import { useRouter } from 'expo-router';
-import { Star } from 'lucide-react-native';
+import { Bell, Star, SlidersHorizontal, Search, X } from 'lucide-react-native';
+import Colors from '../../constants/Colors';
 
-// Dados fictícios para teste
-const TERAPEUTAS = [
-  { id: '1', nome: 'Dra. Ana Silva', especialidade: 'Psicóloga Clínica', nota: 4.9, imagem: 'https://i.pravatar.cc/150?u=1' },
-  { id: '2', nome: 'Dr. Marcos Souza', especialidade: 'Terapeuta Cognitivo', nota: 4.8, imagem: 'https://i.pravatar.cc/150?u=2' },
-  { id: '3', nome: 'Dra. Julia Lins', especialidade: 'Especialista em Ansiedade', nota: 5.0, imagem: 'https://i.pravatar.cc/150?u=3' },
+// Mock data to match the design style
+const PROXIMA_CONSULTA = {
+  id: '1',
+  nome: 'Dra. Andréa Soares',
+  especialidade: 'Psicóloga',
+  nota: 4.7,
+  horario: 'Hoje, 15:00 - Online',
+  imagem: 'https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&q=80&w=400',
+};
+
+const TODOS_TERAPEUTAS = [
+  {
+    id: '2',
+    nome: 'Dr. Carlos Alberto',
+    especialidade: 'Terapia Infantil',
+    nota: 4.3,
+    imagem: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=400',
+  },
+  {
+    id: '3',
+    nome: 'Dra. Juliana Mendes',
+    especialidade: 'Terapia de Casal',
+    nota: 4.8,
+    imagem: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=400',
+  },
+  {
+    id: '4',
+    nome: 'Dr. Roberto Santos',
+    especialidade: 'Psicólogo Cognitivo',
+    nota: 4.5,
+    imagem: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400',
+  },
+  {
+    id: '5',
+    nome: 'Dra. Fernanda Lima',
+    especialidade: 'Psicanalista',
+    nota: 4.9,
+    imagem: 'https://images.unsplash.com/photo-1527613426441-4da17471b66d?auto=format&fit=crop&q=80&w=400',
+  },
 ];
 
 export default function HomeScreen() {
@@ -17,73 +52,246 @@ export default function HomeScreen() {
   const name = useUserStore((state) => state.name);
   const router = useRouter();
 
-  const renderTherapist = ({ item }: { item: typeof TERAPEUTAS[0] }) => (
-    <Card 
-      style={styles.card} 
-      onPress={() => router.push({ pathname: '/therapist/[id]', params: { id: item.id } })}
-    >
-      <Card.Content style={styles.cardContent}>
-        <Avatar.Image size={60} source={{ uri: item.imagem }} />
-        <View style={styles.infoContainer}>
-          <Text variant="titleMedium" style={styles.name}>{item.nome}</Text>
-          <Text variant="bodySmall" style={styles.specialty}>{item.especialidade}</Text>
-          <View style={styles.ratingContainer}>
-            <Star size={14} color="#FBBF24" fill="#FBBF24" />
-            <Text style={styles.ratingText}>{item.nota}</Text>
-          </View>
+  const filteredTherapists = useMemo(() => {
+    if (!searchQuery.trim()) return TODOS_TERAPEUTAS;
+    const query = searchQuery.toLowerCase();
+    return TODOS_TERAPEUTAS.filter(
+      t => t.nome.toLowerCase().includes(query) || 
+           t.especialidade.toLowerCase().includes(query)
+    );
+  }, [searchQuery]);
+
+  const renderRecommendedCard = (therapist: typeof TODOS_TERAPEUTAS[0]) => (
+    <View key={therapist.id} style={styles.recommendedCard}>
+      <Image source={{ uri: therapist.imagem }} style={styles.recommendedImage} />
+      <View style={styles.recommendedInfo}>
+        <Text style={styles.recName}>{therapist.nome}</Text>
+        <Text style={styles.recSpecialty}>{therapist.especialidade}</Text>
+        <View style={styles.recRating}>
+          <Star size={14} color={Colors.light.primary} fill={Colors.light.primary} />
+          <Text style={styles.recRatingText}>{therapist.nota}</Text>
         </View>
-        <IconButton icon="chevron-right" iconColor="#0284c7" onPress={() => {}} />
-      </Card.Content>
-    </Card>
+        <View style={styles.recButtons}>
+          <TouchableOpacity 
+            style={styles.btnOutline}
+            onPress={() => router.push({ pathname: '/therapist/[id]', params: { id: therapist.id } })}
+          >
+            <Text style={styles.btnOutlineText}>Ver Perfil</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.btnPrimarySmall}>
+            <Text style={styles.btnPrimaryText}>Agendar</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 
   return (
-    <View style={styles.container}>
-      {/* Header com Nome do Usuário */}
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header */}
       <View style={styles.header}>
-        <View>
-          <Text variant="bodyLarge" style={styles.greeting}>Olá, {name || 'Visitante'}</Text>
-          <Text variant="headlineSmall" style={styles.welcomeTitle}>Encontre seu terapeuta</Text>
-        </View>
-        <Avatar.Text size={45} label={name ? name.substring(0, 2).toUpperCase() : 'ME'} style={styles.avatar} />
+        <Text style={styles.brandTitle}>Mind Easy</Text>
+        <TouchableOpacity style={styles.notificationBtn}>
+          <Bell size={28} color={Colors.light.primary} />
+          <Badge size={18} style={styles.badge}>2</Badge>
+        </TouchableOpacity>
       </View>
 
-      {/* Barra de Busca */}
-      <Searchbar
-        placeholder="Buscar especialidade ou nome..."
-        onChangeText={setSearchQuery}
-        value={searchQuery}
-        style={styles.searchBar}
-        inputStyle={{ minHeight: 0 }}
-      />
+      {/* Greeting */}
+      <View style={styles.greetingSection}>
+        <Text style={styles.greetingText}>Olá <Text style={styles.boldBlue}>{name || '*User*'}</Text> !</Text>
+        <Text style={styles.subGreeting}>Encontre seu Terapeuta</Text>
+      </View>
 
-      {/* Lista de Profissionais */}
-      <FlatList
-        data={TERAPEUTAS}
-        keyExtractor={(item) => item.id}
-        renderItem={renderTherapist}
-        contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={<Text variant="titleMedium" style={styles.listTitle}>Profissionais em destaque</Text>}
-      />
-    </View>
+      {/* Search Bar */}
+      <View style={styles.searchSection}>
+        <View style={styles.searchBarContainer}>
+          <Search size={20} color={Colors.light.muted} style={styles.searchIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Pesquisar terapeutas..."
+            placeholderTextColor="#94A3B8"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoCorrect={false}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearIcon}>
+              <X size={18} color={Colors.light.muted} />
+            </TouchableOpacity>
+          )}
+          <View style={styles.divider} />
+          <TouchableOpacity style={styles.filterBtn}>
+            <SlidersHorizontal size={20} color={Colors.light.muted} />
+            <Text style={styles.filterText}>Filtros</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Próxima Consulta - Hidden when searching */}
+      {searchQuery === '' && (
+        <>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitleBlue}>Próxima Consulta</Text>
+          </View>
+
+          <View style={styles.mainCard}>
+            <Image source={{ uri: PROXIMA_CONSULTA.imagem }} style={styles.mainCardImage} />
+            <View style={styles.mainCardInfo}>
+              <Text style={styles.mainCardName}>{PROXIMA_CONSULTA.nome}</Text>
+              <Text style={styles.mainCardSpecialty}>{PROXIMA_CONSULTA.especialidade}</Text>
+              <View style={styles.cardRating}>
+                <Star size={14} color={Colors.light.primary} fill={Colors.light.primary} />
+                <Text style={styles.cardRatingText}>{PROXIMA_CONSULTA.nota}</Text>
+              </View>
+              <Text style={styles.appointmentTime}>
+                <Text style={styles.boldTime}>Hoje, 15:00</Text> - Online
+              </Text>
+              <TouchableOpacity style={styles.btnPrimary}>
+                <Text style={styles.btnPrimaryText}>Entrar na Sessão</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
+
+      {/* Terapeutas List */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitleGrey}>
+          {searchQuery === '' ? 'Terapeutas Recomendados' : 'Resultados da Pesquisa'}
+        </Text>
+      </View>
+
+      {filteredTherapists.length > 0 ? (
+        <View style={styles.recommendedGrid}>
+          {filteredTherapists.map(renderRecommendedCard)}
+        </View>
+      ) : (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateText}>Nenhum terapeuta encontrado para "{searchQuery}"</Text>
+          <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <Text style={styles.clearSearchText}>Limpar pesquisa</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      
+      <View style={{ height: 100 }} />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F0F9FF', paddingHorizontal: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 60, marginBottom: 20 },
-  greeting: { color: '#64748b' },
-  welcomeTitle: { fontWeight: 'bold', color: '#0369a1' },
-  avatar: { backgroundColor: '#BAE6FD' },
-  searchBar: { marginBottom: 25, borderRadius: 12, backgroundColor: '#fff', elevation: 2 },
-  listTitle: { marginBottom: 15, color: '#0c4a6e', fontWeight: 'bold' },
-  list: { paddingBottom: 20 },
-  card: { marginBottom: 12, backgroundColor: '#fff', borderRadius: 16 },
-  cardContent: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
-  infoContainer: { flex: 1, marginLeft: 15 },
-  name: { fontWeight: 'bold', color: '#1e293b' },
-  specialty: { color: '#64748b' },
-  ratingContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  ratingText: { marginLeft: 4, fontSize: 12, color: '#475569', fontWeight: '600' },
+  container: { flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 20 },
+  header: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    marginTop: 60, 
+    marginBottom: 10 
+  },
+  brandTitle: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    color: Colors.light.primary 
+  },
+  notificationBtn: { position: 'relative' },
+  badge: { 
+    position: 'absolute', 
+    top: -5, 
+    right: -5, 
+    backgroundColor: '#3B82F6',
+    color: 'white',
+    fontWeight: 'bold'
+  },
+  greetingSection: { marginBottom: 20 },
+  greetingText: { fontSize: 22, color: '#334155' },
+  boldBlue: { color: Colors.light.primary, fontWeight: 'bold' },
+  subGreeting: { fontSize: 22, fontWeight: 'bold', color: '#475569' },
+  searchSection: { marginBottom: 25 },
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1F5F9',
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+  },
+  searchIcon: { marginRight: 10 },
+  input: { flex: 1, color: '#1E293B', fontSize: 13, height: 40, padding: 0 },
+  clearIcon: { padding: 5 },
+  divider: { width: 1.5, height: 25, backgroundColor: '#CBD5E1', marginHorizontal: 10 },
+  filterBtn: { flexDirection: 'row', alignItems: 'center' },
+  filterText: { marginLeft: 5, color: '#475569', fontSize: 12 },
+  sectionHeader: { marginBottom: 15 },
+  sectionTitleBlue: { fontSize: 20, fontWeight: 'bold', color: Colors.light.primary },
+  sectionTitleGrey: { fontSize: 20, fontWeight: 'bold', color: '#475569' },
+  mainCard: {
+    flexDirection: 'row',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginBottom: 25,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  },
+  mainCardImage: { width: '40%', height: '100%', minHeight: 180 },
+  mainCardInfo: { flex: 1, padding: 15, justifyContent: 'center' },
+  mainCardName: { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
+  mainCardSpecialty: { fontSize: 13, color: '#64748B', marginBottom: 5 },
+  cardRating: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+  cardRatingText: { marginLeft: 5, color: Colors.light.primary, fontWeight: '600' },
+  appointmentTime: { fontSize: 13, color: '#64748B', marginBottom: 15 },
+  boldTime: { fontWeight: 'bold', color: '#1E293B' },
+  btnPrimary: {
+    backgroundColor: Colors.light.primary,
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  btnPrimaryText: { color: 'white', fontWeight: 'bold', fontSize: 14 },
+  recommendedGrid: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'space-between' 
+  },
+  recommendedCard: {
+    width: '48%',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginBottom: 15,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+  },
+  recommendedImage: { width: '100%', height: 120 },
+  recommendedInfo: { padding: 10 },
+  recName: { fontSize: 14, fontWeight: 'bold', color: '#1E293B' },
+  recSpecialty: { fontSize: 11, color: '#64748B', marginBottom: 2 },
+  recRating: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  recRatingText: { marginLeft: 4, fontSize: 11, color: Colors.light.primary, fontWeight: '600' },
+  recButtons: { flexDirection: 'row', justifyContent: 'space-between' },
+  btnOutline: {
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    backgroundColor: '#FFF'
+  },
+  btnOutlineText: { fontSize: 10, color: '#475569', fontWeight: '600' },
+  btnPrimarySmall: {
+    backgroundColor: Colors.light.primary,
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  emptyState: { alignItems: 'center', marginTop: 20, padding: 20 },
+  emptyStateText: { fontSize: 14, color: '#64748B', textAlign: 'center', marginBottom: 10 },
+  clearSearchText: { color: Colors.light.primary, fontWeight: 'bold' }
 });
