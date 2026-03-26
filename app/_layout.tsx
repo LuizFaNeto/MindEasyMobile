@@ -10,7 +10,8 @@ export default function RootLayout() {
         {/* O (auth) não tem header próprio aqui pois as telas terão os seus */}
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         {/* A tela de detalhes do terapeuta */}
-        <Stack.Screen name="therapist/[id]" options={{ title: 'Perfil do Profissional' }} />
+        <Stack.Screen name="therapist/[id]" options={{ title: 'Perfil do Profissional', headerShown: false }} />
+        <Stack.Screen name="notifications" options={{ title: 'Notificações', headerShown: false }} />
       </Stack>
     </PaperProvider>
   );

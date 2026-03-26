@@ -1,33 +1,10 @@
-import { Tabs } from 'expo-router';
-import { Calendar, Home, User } from 'lucide-react-native';
+import { Stack } from 'expo-router';
 
-export default function TabLayout() {
+export default function AuthLayout() {
   return (
-    <Tabs screenOptions={{
-      tabBarActiveTintColor: '#6200ee', // Cor do ícone selecionado (estilo RN Paper)
-      headerShown: false               // Mostra o título da página no topo
-    }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Início',
-          tabBarIcon: ({ color }) => <Home stroke={color} size={24} />,
-        }}
-      />
-      <Tabs.Screen
-        name="calendar"
-        options={{
-          title: 'Consultas',
-          tabBarIcon: ({ color }) => <Calendar stroke={color} size={24} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Meu Perfil',
-          tabBarIcon: ({ color }) => <User stroke={color} size={24} />,
-        }}
-      />
-    </Tabs>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="login" />
+      <Stack.Screen name="register" />
+    </Stack>
   );
 }
