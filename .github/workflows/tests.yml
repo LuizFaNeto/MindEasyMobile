@@ -8,7 +8,6 @@ on:
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +20,7 @@ jobs:
           node-version: 18
 
       - name: Instalar dependências
-        run: npm install --legacy-peer-deps
+        run: npm install
 
       - name: Rodar testes
         run: npm test
