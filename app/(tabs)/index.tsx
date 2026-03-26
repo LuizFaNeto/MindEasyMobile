@@ -91,7 +91,10 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.brandTitle}>Mind Easy</Text>
-        <TouchableOpacity style={styles.notificationBtn}>
+        <TouchableOpacity 
+          style={styles.notificationBtn} 
+          onPress={() => router.push('/notifications')}
+        >
           <Bell size={28} color={Colors.light.primary} />
           <Badge size={18} style={styles.badge}>2</Badge>
         </TouchableOpacity>
