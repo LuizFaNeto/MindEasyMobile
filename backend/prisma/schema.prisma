@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Usuário (Paciente)
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String
+  password      String         // Hash da senha
+  avatar        String?        // URL da imagem de perfil
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relações
+  appointments  Appointment[]
+  reviews       Review[]
+  notifications Notification[]
+}
+
+// Modelo de Terapeuta (Profissional)
+model Therapist {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String
+  specialty     String         // Especialidade principal
+  description   String         // Bio/Sobre
+  crp           String         @unique
+  profileImage  String?        // URL da foto
+  sessionPrice  Float          // Valor da sessão
+  location      String         // Cidade/Estado ou "Online"
+  rating        Float          @default(0) // Média das avaliações recalculada
+  tags          String         // Armazenado como string JSON ou separado por vírgulas
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relações
+  appointments  Appointment[]
+  reviews       Review[]
+}
+
+// Modelo de Agendamento (Consulta)
+model Appointment {
+  id            String         @id @default(uuid())
+  date          DateTime       // Data e Hora da consulta
+  status        String         @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  type          String         @default("ONLINE")    // ONLINE, PRESENTIAL
+  
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  
+  therapistId   String
+  therapist     Therapist      @relation(fields: [therapistId], references: [id])
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+// Modelo de Avaliação (Review)
+model Review {
+  id            String         @id @default(uuid())
+  rating        Int            // De 1 a 5
+  comment       String?
+  
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  
+  therapistId   String
+  therapist     Therapist      @relation(fields: [therapistId], references: [id])
+
+  createdAt     DateTime       @default(now())
+}
+
+// Modelo de Notificação
+model Notification {
+  id            String         @id @default(uuid())
+  title         String
+  message       String
+  isRead        Boolean        @default(false)
+  type          String         // APPOINTMENT_REMINDER, SYSTEM_UPDATE, etc.
+  
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+
+  createdAt     DateTime       @default(now())
+}

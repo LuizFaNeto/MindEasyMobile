@@ -139,7 +139,9 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.mainCard}>
-            <Image source={{ uri: PROXIMA_CONSULTA.imagem }} style={styles.mainCardImage} />
+            <View style={styles.mainCardImageContainer}>
+              <Image source={{ uri: PROXIMA_CONSULTA.imagem }} style={styles.mainCardImage} resizeMode="cover" />
+            </View>
             <View style={styles.mainCardInfo}>
               <Text style={styles.mainCardName}>{PROXIMA_CONSULTA.nome}</Text>
               <Text style={styles.mainCardSpecialty}>{PROXIMA_CONSULTA.especialidade}</Text>
@@ -239,8 +241,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
+    minHeight: 180,
   },
-  mainCardImage: { width: '40%', height: '100%', minHeight: 180 },
+  mainCardImageContainer: { width: '40%', height: '100%', borderTopLeftRadius: 20, borderBottomLeftRadius: 20, overflow: 'hidden' },
+  mainCardImage: { width: '100%', height: '100%' },
   mainCardInfo: { flex: 1, padding: 15, justifyContent: 'center' },
   mainCardName: { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
   mainCardSpecialty: { fontSize: 13, color: '#64748B', marginBottom: 5 },
@@ -272,7 +276,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 5,
   },
-  recommendedImage: { width: '100%', height: 120 },
+  recommendedImage: { width: '100%', height: 140, backgroundColor: '#E2E8F0' },
   recommendedInfo: { padding: 10 },
   recName: { fontSize: 14, fontWeight: 'bold', color: '#1E293B' },
   recSpecialty: { fontSize: 11, color: '#64748B', marginBottom: 2 },
