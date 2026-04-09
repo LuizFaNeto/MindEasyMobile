@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, Plat
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, Button, Surface, Chip, Avatar } from 'react-native-paper';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Star, ArrowLeft, Calendar, Clock, MapPin, Award, MessageCircle } from 'lucide-react-native';
+import { Star, ArrowLeft, Calendar, Clock, MapPin, Award, MessageCircle, Video } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -59,19 +59,25 @@ export default function TherapistProfile() {
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header with Image & Back Button */}
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: therapist.imagem }} style={styles.image} />
-          <LinearGradient
-            colors={['rgba(0,0,0,0.5)', 'transparent']}
-            style={styles.gradientTop}
-          />
+        {/* Modern Header with Avatar */}
+        <View style={[styles.profileHeader, { backgroundColor: theme.primary + '15' }]}>
           <TouchableOpacity 
             style={[styles.backButton, { top: insets.top + 10 }]} 
             onPress={() => router.back()}
           >
-            <ArrowLeft size={24} color="#FFF" />
+            <ArrowLeft size={24} color={theme.primary} />
           </TouchableOpacity>
+          
+          <View style={styles.avatarWrapper}>
+            <View style={[styles.avatarBorder, { borderColor: theme.primary }]}>
+              <Image 
+                source={{ uri: therapist.imagem }} 
+                style={styles.profileImage} 
+                resizeMode="cover"
+              />
+            </View>
+            <View style={styles.onlineBadge} />
+          </View>
         </View>
 
         {/* Content Section */}
@@ -117,7 +123,12 @@ export default function TherapistProfile() {
             </View>
 
             <View style={styles.reviewTeaser}>
-              <Text style={styles.sectionTitle}>Depoimentos</Text>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionTitle}>Avaliações</Text>
+                <TouchableOpacity onPress={() => router.push({ pathname: '/therapist/review', params: { id } })}>
+                  <Text style={[styles.seeAll, { color: theme.primary }]}>Avaliar agora</Text>
+                </TouchableOpacity>
+              </View>
               <Surface style={styles.reviewCard} elevation={1}>
                 <View style={styles.reviewerRow}>
                   <Avatar.Text size={32} label="JP" style={{ backgroundColor: theme.primary }} />
@@ -138,6 +149,12 @@ export default function TherapistProfile() {
 
       {/* Floating Action Bar */}
       <Surface style={styles.actionFooter} elevation={4}>
+        <TouchableOpacity 
+          style={styles.callBtn}
+          onPress={() => router.push({ pathname: '/call/[id]', params: { id, nome: therapist.nome } })}
+        >
+          <Video size={24} color={theme.primary} />
+        </TouchableOpacity>
         <TouchableOpacity style={styles.messageBtn}>
           <MessageCircle size={24} color={theme.primary} />
         </TouchableOpacity>
@@ -149,7 +166,7 @@ export default function TherapistProfile() {
           labelStyle={styles.bookBtnLabel}
           icon={() => <Calendar size={20} color="#FFF" />}
         >
-          Agendar Consulta
+          Agendar
         </Button>
       </Surface>
     </View>
@@ -158,23 +175,57 @@ export default function TherapistProfile() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFF' },
-  imageContainer: { width: width, height: height * 0.4, position: 'relative' },
-  image: { width: '100%', height: '100%', resizeMode: 'cover' },
-  gradientTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 100 },
+  profileHeader: { 
+    height: 220, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+  },
+  avatarWrapper: {
+    position: 'relative',
+    marginTop: 20
+  },
+  avatarBorder: {
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    borderWidth: 3,
+    padding: 4,
+    backgroundColor: '#FFF'
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 60,
+  },
+  onlineBadge: {
+    position: 'absolute',
+    bottom: 5,
+    right: 5,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#10B981',
+    borderWidth: 4,
+    borderColor: '#FFF'
+  },
   backButton: { 
     position: 'absolute', 
-    top: 50, 
     left: 20, 
-    backgroundColor: 'rgba(0,0,0,0.3)', 
+    backgroundColor: '#FFF', 
     borderRadius: 12, 
-    padding: 8 
+    padding: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4
   },
   contentSurface: { 
-    marginTop: -30, 
-    borderTopLeftRadius: 30, 
-    borderTopRightRadius: 30, 
+    marginTop: -20, 
     backgroundColor: '#FFF', 
-    paddingTop: 30 
+    paddingTop: 20 
   },
   infoSection: { paddingHorizontal: 24 },
   titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
@@ -236,4 +287,16 @@ const styles = StyleSheet.create({
   bookBtn: { flex: 1, borderRadius: 16, backgroundColor: '#3B82F6' },
   bookBtnContent: { height: 56 },
   bookBtnLabel: { fontSize: 16, fontWeight: 'bold' },
+  sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  seeAll: { fontSize: 14, fontWeight: 'bold' },
+  callBtn: { 
+    width: 56, 
+    height: 56, 
+    borderRadius: 16, 
+    backgroundColor: '#F0FDF4', 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#DCFCE7'
+  },
 });
