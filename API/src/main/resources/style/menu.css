@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #5FB6D9, #94D7F2); /* igual ao cadastro */
+    display: flex;
+}
+
+.sidebar {
+    width: 240px;
+    background: #2685BF; /* azul do cadastro */
+    color: #fff;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: -240px; /* começa oculta */
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    transition: left 0.3s; /* animação suave */
+    z-index: 1000; 
+}
+
+.sidebar .brand {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Handle da sidebar */ 
+#sidebar-handle { 
+    position: fixed; 
+    top: 50%; 
+    left: 0; 
+    transform: translateY(-50%);
+    width: 20px; height: 60px; 
+    background: #2685BF; 
+    color: white; display: flex; 
+    align-items: center; justify-content: center; 
+    cursor: pointer; 
+    z-index: 1001; border-top-right-radius: 5px; 
+    border-bottom-right-radius: 5px; 
+    font-size: 18px; 
+    } 
+.sidebar.shown + #sidebar-handle { 
+    display: none; 
+} 
+.sidebar.shown { 
+    left: 0; 
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.sidebar ul li a i {
+    font-size: 18px;
+}
+
+.logout {
+    margin-top: auto;
+}
+
+.main {
+    margin-left: 240px;
+    padding: 20px;
+    flex: 1;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #fff;
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card i {
+    font-size: 40px;
+    color: #2685BF;
+    margin-bottom: 10px;
+}
+
+.card p {
+    margin: 0;
+    color: #2685BF;
+    font-weight: bold;
+}

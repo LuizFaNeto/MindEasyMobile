@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu – MindEasy</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../style/menu.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+  <div class="sidebar">
+    <div class="brand">MindEasy</div>
+    <ul>
+      <li><a href="calendario.html"><i class="fa-regular fa-calendar"></i> Agenda</a></li>
+      <li><a href="perfilTerapeuta.html"><i class="fa-solid fa-user-doctor"></i> Terapeuta</a></li>
+      <li><a href="chat.html"><i class="fa-regular fa-comment"></i> Chat</a></li>
+      <li><a href="videoChamada.html"><i class="fa-solid fa-video"></i> Videochamada</a></li>
+      <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+    </ul>
+    <div class="logout">
+      <a class="d-block text-center text-danger fw-bold" href="cadastro.html">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </a>
+    </div>
+  </div>
+
+  <div id="sidebar-handle">&#x25B6;</div> <div class="main">
+    <h2>Bem-vindo ao MindEasy</h2>
+    <p>Escolha uma opção abaixo:</p>
+
+    <div class="card-grid">
+      <div class="card" onclick="location.href='calendario.html'">
+        <i class="fa-regular fa-calendar"></i>
+        <p>Agendamento</p>
+      </div>
+      <div class="card" onclick="location.href='chat.html'">
+        <i class="fa-regular fa-comment"></i>
+        <p>Chat</p>
+      </div>
+      <div class="card" onclick="location.href='dashboard.html'">
+        <i class="fa-solid fa-chart-line"></i>
+        <p>Dashboard</p>
+      </div>
+      <div class="card" onclick="location.href='calendario.html'">
+        <i class="fa-regular fa-calendar-check"></i>
+        <p>Remarcar Consulta</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../static/menu.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+}
