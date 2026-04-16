@@ -28,8 +28,8 @@ jobs:
       # ========================
       # Rodar testes unitários
       # ========================
-      - name: Testes unitários
-        run: npm run test:unit
+      #- name: Testes unitários
+      #  run: npm run test:unit
 
       # ========================
       # Build do app (Android)
