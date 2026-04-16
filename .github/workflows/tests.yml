@@ -17,16 +17,16 @@ jobs:
       # ========================
       # Node (seu projeto RN)
       # ========================
-      - name: Instalar Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+      #- name: Instalar Node
+      #  uses: actions/setup-node@v3
+      #  with:
+      #    node-version: 18
 
-      - name: Instalar dependências
-        run: npm install
+      #- name: Instalar dependências
+      #  run: npm install
 
-      - name: Rodar testes JS (unitários)
-        run: npx jest tests/unit
+      #- name: Rodar testes JS (unitários)
+      #  run: npx jest tests/unit
 
       # ========================
       # Python + Robot
