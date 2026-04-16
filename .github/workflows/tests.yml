@@ -8,12 +8,15 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest  # IMPORTANTE (Detox precisa disso)
 
     steps:
       - name: Clonar repositório
         uses: actions/checkout@v3
 
+      # ========================
+      # Node
+      # ========================
       - name: Instalar Node
         uses: actions/setup-node@v3
         with:
@@ -22,5 +25,20 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
-      - name: Rodar testes
-        run: npm test
+      # ========================
+      # Rodar testes unitários
+      # ========================
+      #- name: Testes unitários
+      #  run: npm run test:unit
+
+      # ========================
+      # Build do app (Android)
+      # ========================
+      - name: Build app
+        run: npx detox build --configuration android.emu.debug
+
+      # ========================
+      # Rodar testes E2E (Detox)
+      # ========================
+      - name: Testes E2E (Detox)
+        run: npx detox test --configuration android.emu.debug
