@@ -14,6 +14,9 @@ jobs:
       - name: Clonar repositório
         uses: actions/checkout@v3
 
+      # ========================
+      # Node (seu projeto RN)
+      # ========================
       - name: Instalar Node
         uses: actions/setup-node@v3
         with:
@@ -22,5 +25,33 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
-      - name: Rodar testes
-        run: npm test
+      - name: Rodar testes JS (unitários)
+        run: npx jest tests/unit
+
+      # ========================
+      # Python + Robot
+      # ========================
+      - name: Instalar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Instalar Robot Framework e AppiumLibrary
+        run: |
+          pip install robotframework
+          pip install robotframework-appiumlibrary
+
+      # ========================
+      # Appium
+      # ========================
+      - name: Instalar Appium
+        run: npm install -g appium
+
+      - name: Iniciar Appium
+        run: appium &
+      
+      # ========================
+      # Rodar testes Robot
+      # ========================
+      - name: Rodar testes mobile (Robot)
+        run: robot tests/mobile/
