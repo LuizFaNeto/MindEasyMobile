@@ -1,0 +1,160 @@
+/* ===== RESET BÁSICO ===== */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #5FB6D9, #94D7F2); /* base do 2º CSS */
+    font:500 16px/1.4 system-ui;
+    margin:0;
+    color:#111; /* texto padrão escuro */
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 240px;
+    background: #2685BF; /* mantém a base azul do 2º CSS */
+    color: #fff;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: -240px; /* começa oculta */
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    transition: left 0.3s; /* animação suave */
+    z-index: 1000;
+}
+
+#sidebar-handle {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 60px;
+    background: #2685BF;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    font-size: 18px;
+}
+
+/* Mostra a sidebar */
+.sidebar.shown {
+    left: 0;
+}
+
+.sidebar.shown + #sidebar-handle {
+    display: none;
+}
+
+.sidebar.shown ~ .main-container {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+}
+
+.sidebar .brand {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.sidebar ul li a i {
+    font-size: 18px;
+}
+
+.logout {
+    margin-top: auto;
+}
+
+/* ===== LAYOUT PRINCIPAL ===== */
+.main-container {
+    display: flex;
+    margin-left: 0; /* espaço da sidebar */
+    height: 100vh;
+    width: 100%;
+    transition: margin-left 0.3s, width 0.3s;
+}
+
+.wrap{
+    max-width:900px;
+    margin:32px auto;
+    padding:0 16px
+}
+        
+.card{
+    background:#fff;           /* antes #141820 */
+    border:1px solid #ddd;     /* antes #232936 */
+    border-radius:16px;
+    padding:16px
+}
+
+h1{
+    margin:0 0 12px
+}
+
+.chart{
+    width:100%;
+    height:320px;
+    display:block; /* o SVG abaixo ocupa 100% */
+}
+
+/* estilos das barras e eixos */
+.bar{
+    /* antes: fill:url(#grad); */
+    fill:#2685BF;              /* usa o azul base do 2º CSS */
+    transition:opacity .2s,transform .2s;
+}
+
+.bar:hover{
+    opacity:.9;
+    transform:translateY(-2px);
+}
+
+.axis{
+    stroke:#ddd;               /* antes #2a3342 */
+    stroke-width:1
+}
+
+.label{
+    fill:#666;                 /* antes #9aa6b2 */
+    font-size:12px;
+    text-anchor:middle
+}
+
+.tickLabel{
+    fill:#666;                 /* antes #9aa6b2 */
+    font-size:12px;
+    text-anchor:end
+}

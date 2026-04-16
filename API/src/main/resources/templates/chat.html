@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat – MindEasy</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="../style/chat.css">
+</head>
+<body>
+
+  <div class="sidebar" id="sidebar">
+    <div class="brand">MindEasy</div>
+    <ul>
+      <li><a href="calendario.html"><i class="fa-regular fa-calendar"></i> Agenda</a></li>
+      <li><a href="perfilTerapeuta.html"><i class="fa-solid fa-user-doctor"></i> Terapeuta</a></li>
+      <li><a href="menu.html"><i class="fa-regular fa-star"></i> Serviços</a></li>
+      <li><a href="videoChamada.html"><i class="fa-solid fa-video"></i> Videochamada</a></li>
+      <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+    </ul>
+
+    <div class="logout">
+      <a class="d-block text-center text-danger fw-bold" href="cadastro.html">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </a>
+    </div>
+  </div>
+
+  <div id="sidebar-handle">&#x25B6;</div> 
+
+  <div class="main-container">
+    <div class="contacts-list">
+      <div class="contacts-header">Contatos</div>
+
+      <div class="contact">
+        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Cliente">
+        <div class="contact-info">
+          <h4>João Silva</h4>
+          <small>online</small>
+        </div>
+      </div>
+
+      <div class="contact">
+        <img src="https://randomuser.me/api/portraits/women/2.jpg" alt="Cliente">
+        <div class="contact-info">
+          <h4>Maria Oliveira</h4>
+          <small>visto por último 09:30</small>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="chat-container">
+
+      <div class="chat-header">
+        <div class="chat-user">
+          <img src="https://via.placeholder.com/40" alt="Cliente">
+          <div>
+            <h4>Cliente João Silva</h4>
+            <small>online</small>
+          </div>
+        </div>
+        <div class="chat-actions">
+          <i class="fa-solid fa-video" onclick="window.location.href='videoChamada.html'"></i>
+          <i class="fa-solid fa-phone" onclick="window.location.href='videoChamada.html'"></i>
+        </div>
+      </div>
+
+      <div class="chat-body" id="chatBody">
+        <div class="message received">
+          <p>Olá, doutor!</p>
+          <span class="time">10:00</span>
+        </div>
+        <div class="message sent">
+          <p>Olá João, tudo bem? Como você está se sentindo hoje?</p>
+          <span class="time">10:02</span>
+        </div>
+      </div>
+
+      <div class="chat-footer">
+        <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
+        <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+ <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  const API_URL = "http://localhost:5000/mensagens"; // altere para o endpoint real da sua API
+
+  const sendBtn = document.getElementById("sendBtn");
+  const input = document.getElementById("messageInput");
+  const chatBody = document.getElementById("chatBody");
+  const chatHeaderImg = document.querySelector(".chat-user img");
+
+  // ===== Função para exibir mensagens no chat =====
+  function renderMessage(msg, type) {
+    const div = document.createElement("div");
+    div.classList.add("message", type);
+    div.innerHTML = `
+      <p>${msg.texto}</p>
+      <span class="time">${msg.hora || new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+    `;
+    chatBody.appendChild(div);
+  }
+
+  // ===== Função para carregar mensagens da API (ATUALIZADA) =====
+  async function carregarMensagens() {
+    try {
+      const token = localStorage.getItem('mindeasy_token');
+      if (!token) {
+        console.warn("Token não encontrado, aguardando login.");
+        return; // Não tenta carregar se não houver token
+      }
+
+      // Adiciona o token no cabeçalho da requisição
+      const response = await axios.get(API_URL, {
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      chatBody.innerHTML = ""; // limpa o chat
+      response.data.forEach(msg => {
+        renderMessage(msg, msg.remetente === "terapeuta" ? "sent" : "received");
+      });
+      chatBody.scrollTop = chatBody.scrollHeight;
+    } catch (error) {
+      console.error("Erro ao buscar mensagens:", error);
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          // Se a sessão expirar, para de tentar carregar e manda pro login
+          clearInterval(chatInterval); // Para o timer
+          alert("Sua sessão expirou. Faça o login novamente.");
+          window.location.href = 'cadastro.html';
+      }
+    }
+  }
+
+  // ===== Enviar nova mensagem (ATUALIZADA) =====
+  async function enviarMensagem() {
+    const texto = input.value.trim();
+    if (!texto) return;
+
+    const token = localStorage.getItem('mindeasy_token');
+    if (!token) {
+        alert("Você não está logado. Faça o login para enviar mensagens.");
+        window.location.href = 'cadastro.html';
+        return;
+    }
+
+    const novaMensagem = {
+      remetente: "terapeuta", // pode ser 'cliente' dependendo do usuário logado
+      texto: texto,
+      hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+    };
+
+    try {
+      // Adiciona o token no cabeçalho da requisição
+      await axios.post(API_URL, novaMensagem, {
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      renderMessage(novaMensagem, "sent");
+      input.value = "";
+      chatBody.scrollTop = chatBody.scrollHeight;
+    } catch (error) {
+      console.error("Erro ao enviar mensagem:", error);
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          alert("Sua sessão expirou. Faça o login novamente.");
+          window.location.href = 'cadastro.html';
+      }
+    }
+  }
+
+  // ===== Eventos =====
+  sendBtn.addEventListener("click", enviarMensagem);
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") enviarMensagem();
+  });
+
+  // ===== Atualiza o chat automaticamente =====
+  // (Guardamos o intervalo para poder pará-lo se a sessão expirar)
+  const chatInterval = setInterval(carregarMensagens, 5000); 
+  carregarMensagens(); // carrega assim que entra
+
+
+  
+</script>
+<script src="../static/menu.js"></script>
+</body>
+</html>

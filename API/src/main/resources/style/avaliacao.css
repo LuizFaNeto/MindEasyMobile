@@ -1,0 +1,103 @@
+/* Sidebar (igual à do perfil do terapeuta) */
+.sidebar {
+  width: 240px;
+  background: #2685BF;
+  color: #fff;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: -240px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  transition: left 0.3s;
+  z-index: 1000;
+}
+
+.sidebar .brand {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+#sidebar-handle {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 60px;
+  background: #2685BF;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1001;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  font-size: 18px;
+}
+
+.sidebar.shown + #sidebar-handle {
+  display: none;
+}
+
+.sidebar.shown {
+  left: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.sidebar ul li {
+  margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+  color: #fff;
+  text-decoration: none;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: background 0.3s;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.logout {
+  margin-top: auto;
+}
+
+.main {
+  margin-left: 240px;
+  padding: 20px;
+  flex: 1;
+}
+
+.star {
+  font-size: 2.2rem;
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.2s;
+}
+
+.star.checked {
+  color: rgb(0, 89, 255);
+}
+
+@media (max-width: 992px) {
+  .main {
+    margin-left: 0;
+  }
+}
