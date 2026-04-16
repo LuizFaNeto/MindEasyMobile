@@ -1,9 +1,9 @@
-import React from 'react';
 import { Tabs } from 'expo-router';
-import { Home, Calendar, User } from 'lucide-react-native';
+import { Calendar, Home, User } from 'lucide-react-native';
+import React from 'react';
 
-import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
+import Colors from '@/constants/Colors';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -31,6 +31,13 @@ export default function TabLayout() {
         options={{
           title: 'Consultas',
           tabBarIcon: ({ color }) => <Calendar size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="user-profile"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color }) => <User size={24} color={color} />,
         }}
       />
       <Tabs.Screen
