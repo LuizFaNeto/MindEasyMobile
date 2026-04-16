@@ -8,50 +8,37 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest  # ⚠️ IMPORTANTE (Detox precisa disso)
 
     steps:
       - name: Clonar repositório
         uses: actions/checkout@v3
 
       # ========================
-      # Node (seu projeto RN)
+      # Node
       # ========================
-      #- name: Instalar Node
-      #  uses: actions/setup-node@v3
-      #  with:
-      #    node-version: 18
-
-      #- name: Instalar dependências
-      #  run: npm install
-
-      #- name: Rodar testes JS (unitários)
-      #  run: npx jest tests/unit
-
-      # ========================
-      # Python + Robot
-      # ========================
-      - name: Instalar Python
-        uses: actions/setup-python@v4
+      - name: Instalar Node
+        uses: actions/setup-node@v3
         with:
-          python-version: '3.10'
+          node-version: 18
 
-      - name: Instalar Robot Framework e AppiumLibrary
-        run: |
-          pip install robotframework
-          pip install robotframework-appiumlibrary
+      - name: Instalar dependências
+        run: npm install
 
       # ========================
-      # Appium
+      # Rodar testes unitários
       # ========================
-      - name: Instalar Appium
-        run: npm install -g appium
+      - name: Testes unitários
+        run: npm run test:unit
 
-      - name: Iniciar Appium
-        run: appium &
-      
       # ========================
-      # Rodar testes Robot
+      # Build do app (Android)
       # ========================
-      - name: Rodar testes mobile (Robot)
-        run: robot tests/mobile/
+      - name: Build app
+        run: npx detox build --configuration android.emu.debug
+
+      # ========================
+      # Rodar testes E2E (Detox)
+      # ========================
+      - name: Testes E2E (Detox)
+        run: npx detox test --configuration android.emu.debug
