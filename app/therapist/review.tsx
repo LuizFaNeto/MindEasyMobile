@@ -159,3 +159,123 @@ export default function ReviewScreen() {
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    height: 60,
+  },
+  backButton: {
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: '#FFF',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  scrollContent: {
+    padding: 24,
+  },
+  therapistCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderRadius: 24,
+    backgroundColor: '#FFF',
+    marginBottom: 32,
+  },
+  therapistInfo: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  therapistName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1E293B',
+  },
+  therapistSpec: {
+    fontSize: 14,
+    color: '#64748B',
+    marginTop: 4,
+  },
+  ratingSection: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginBottom: 8,
+  },
+  sectionSubtitle: {
+    fontSize: 14,
+    color: '#64748B',
+    marginBottom: 20,
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  commentSection: {
+    marginBottom: 32,
+  },
+  input: {
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    padding: 16,
+    fontSize: 16,
+    color: '#1E293B',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginTop: 12,
+  },
+  footer: {
+    paddingHorizontal: 24,
+    backgroundColor: '#FFF',
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  submitBtn: {
+    borderRadius: 16,
+    elevation: 0,
+  },
+  submitBtnContent: {
+    height: 56,
+    flexDirection: 'row-reverse',
+  },
+  submitBtnLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginHorizontal: 12,
+  },
+  dialog: {
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+  },
+  dialogTitle: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  dialogText: {
+    textAlign: 'center',
+    color: '#64748B',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+});
