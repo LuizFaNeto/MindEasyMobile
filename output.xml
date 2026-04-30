@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.2 (Python 3.12.10 on win32)" generated="2026-04-30T20:09:02.356567" rpa="false" schemaversion="5">
+<suite id="s1" name="Mobile" source="C:\Users\joaqu\OneDrive\Documentos\GitHub\MindEasyMobile\tests\mobile">
+<suite id="s1-s1" name="Review Test" source="C:\Users\joaqu\OneDrive\Documentos\GitHub\MindEasyMobile\tests\mobile\review_test.robot">
+<kw name="Abrir Aplicativo" type="SETUP">
+<kw name="Open Application" owner="AppiumLibrary">
+<arg>${REMOTE_URL}</arg>
+<arg>platformName=${PLATFORM_NAME}</arg>
+<arg>deviceName=${DEVICE_NAME}</arg>
+<arg>appPackage=${APP_PACKAGE}</arg>
+<arg>appActivity=${APP_ACTIVITY}</arg>
+<arg>automationName=UiAutomator2</arg>
+<doc>Opens a new application to given Appium server.
+Capabilities of appium server, Android and iOS,
+Please check https://appium.io/docs/en/2.1/cli/args/
+| *Option*            | *Man.* | *Description*     |
+| remote_url          | Yes    | Appium server url |
+| alias               | no     | alias             |
+| strict_ssl          | No     | allows you to send commands to an invalid certificate host like a self-signed one. |</doc>
+<status status="NOT RUN" start="2026-04-30T20:09:10.359082" elapsed="0.000000"/>
+</kw>
+<status status="PASS" start="2026-04-30T20:09:10.347710" elapsed="0.013402"/>
+</kw>
+<test id="s1-s1-t1" name="Deve Avaliar Profissional Com Sucesso" line="15">
+<kw name="Wait Until Page Contains" owner="AppiumLibrary">
+<arg>Avaliar Profissional</arg>
+<doc>Waits until `text` appears on current page.</doc>
+<status status="NOT RUN" start="2026-04-30T20:09:10.363138" elapsed="0.000000"/>
+</kw>
+<kw name="Click Element" owner="AppiumLibrary">
+<arg>xpath=(//android.widget.Button)[5]</arg>
+<doc>Click element identified by `locator`.</doc>
+<status status="NOT RUN" start="2026-04-30T20:09:10.364499" elapsed="0.000000"/>
+</kw>
+<kw name="Input Text" owner="AppiumLibrary">
+<arg>xpath=//android.widget.EditText</arg>
+<arg>Excelente atendimento</arg>
+<doc>Types the given `text` into text field identified by `locator`.</doc>
+<status status="NOT RUN" start="2026-04-30T20:09:10.364499" elapsed="0.000000"/>
+</kw>
+<kw name="Click Element" owner="AppiumLibrary">
+<arg>xpath=//android.widget.Button[@content-desc="Enviar Avaliação"]</arg>
+<doc>Click element identified by `locator`.</doc>
+<status status="NOT RUN" start="2026-04-30T20:09:10.364499" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="AppiumLibrary">
+<arg>Obrigado!</arg>
+<doc>Waits until `text` appears on current page.</doc>
+<status status="NOT RUN" start="2026-04-30T20:09:10.366681" elapsed="0.000000"/>
+</kw>
+<status status="PASS" start="2026-04-30T20:09:10.361112" elapsed="0.005569"/>
+</test>
+<kw name="Close Application" owner="AppiumLibrary" type="TEARDOWN">
+<doc>Closes the current application and also close webdriver session.</doc>
+<status status="NOT RUN" start="2026-04-30T20:09:10.368419" elapsed="0.001569"/>
+</kw>
+<status status="PASS" start="2026-04-30T20:09:02.849410" elapsed="7.520578"/>
+</suite>
+<status status="PASS" start="2026-04-30T20:09:02.363541" elapsed="8.010111"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Mobile" id="s1" pass="1" fail="0" skip="0">Mobile</stat>
+<stat name="Review Test" id="s1-s1" pass="1" fail="0" skip="0">Mobile.Review Test</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
