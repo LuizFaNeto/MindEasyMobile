@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { TextInput, Button, Text, Surface } from 'react-native-paper';
-import { useRouter } from 'expo-router';
-import { LogIn, Mail, Lock, UserPlus } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { Lock, LogIn, Mail, UserPlus } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Button, Surface, Text, TextInput } from 'react-native-paper';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -11,52 +11,53 @@ export default function LoginScreen() {
   const router = useRouter();
 
   const handleLogin = () => {
-    // Aqui você validaria os dados
-    if (email && password) {
-      router.replace('/(tabs)');
-    } else {
-      alert("Por favor, preencha todos os campos.");
-    }
+    if (email && password) router.replace('/(tabs)');
+    else alert('Por favor, preencha todos os campos.');
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <LinearGradient
-        colors={['#E0F2FE', '#BAE6FD', '#7DD3FC']}
-        style={styles.container}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.innerContainer}
-          >
+      <LinearGradient colors={['#E0F2FE', '#BAE6FD', '#7DD3FC']} style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        >
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.innerContainer}>
             <View style={styles.header}>
               <Text variant="headlineMedium" style={styles.title}>Bem-vindo de volta!</Text>
               <Text variant="bodyMedium" style={styles.subtitle}>Acesse sua conta para continuar.</Text>
             </View>
 
             <Surface style={styles.card} elevation={4}>
-              <TextInput
-                label="E-mail"
-                value={email}
-                onChangeText={setEmail}
-                mode="flat"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                left={<TextInput.Icon icon={() => <Mail size={20} color="#0284c7" />} />}
-                style={styles.input}
-                activeUnderlineColor="#0284c7"
-              />
+              <Pressable style={styles.field} onPress={() => emailRef.current?.focus()}>
+                <Mail size={20} color="#0284c7" />
+                <TextInput
+                  ref={emailRef}
+                  mode="flat"
+                  placeholder="E-mail"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  style={styles.fieldInput}
+                  underlineColor="transparent"
+                  activeUnderlineColor="transparent"
+                />
+              </Pressable>
 
               <TextInput
-                label="Senha"
+                mode="outlined"
+                placeholder="Senha"
                 value={password}
                 onChangeText={setPassword}
-                mode="flat"
                 secureTextEntry
-                left={<TextInput.Icon icon={() => <Lock size={20} color="#0284c7" />} />}
+                onPressIn={() => {}}
                 style={styles.input}
-                activeUnderlineColor="#0284c7"
+                outlineColor="#D9E6F2"
+                activeOutlineColor="#0284c7"
               />
 
               <Button
@@ -70,9 +71,9 @@ export default function LoginScreen() {
                 Entrar
               </Button>
 
-              <Button 
-                mode="text" 
-                onPress={() => router.replace('/(auth)/register')} 
+              <Button
+                mode="text"
+                onPress={() => router.replace('/(auth)/register')}
                 style={styles.backButton}
                 labelStyle={{ color: '#0284c7', fontWeight: 'bold' }}
                 icon={() => <UserPlus size={16} color="#0284c7" />}
