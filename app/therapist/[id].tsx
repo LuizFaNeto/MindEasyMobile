@@ -160,7 +160,7 @@ export default function TherapistProfile() {
         </TouchableOpacity>
         <Button 
           mode="contained" 
-          onPress={() => {}} 
+          onPress={() => router.push({ pathname: '/therapist/book', params: { id, nome: therapist.nome } })} 
           style={styles.bookBtn}
           contentStyle={styles.bookBtnContent}
           labelStyle={styles.bookBtnLabel}
