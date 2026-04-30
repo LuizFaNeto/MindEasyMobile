@@ -1,4 +1,4 @@
-name: Testes React Native
+name: Testes MindEasy
 
 on:
   push:
@@ -7,38 +7,49 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    runs-on: macos-latest  # IMPORTANTE (Detox precisa disso)
+  # ============================================================
+  # Job 1: Testes unitários (Jest)
+  # ============================================================
+  unit-tests:
+    name: Testes Unitários (Jest)
+    runs-on: ubuntu-latest
 
     steps:
       - name: Clonar repositório
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # ========================
-      # Node
-      # ========================
-      - name: Instalar Node
-        uses: actions/setup-node@v3
+      - name: Instalar Node 18
+        uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
 
       - name: Instalar dependências
-        run: npm install
+        run: npm ci
 
-      # ========================
-      # Rodar testes unitários
-      # ========================
-      #- name: Testes unitários
-      #  run: npm run test:unit
+      - name: Rodar testes unitários
+        run: npm run test:unit
 
-      # ========================
-      # Build do app (Android)
-      # ========================
-      - name: Build app
-        run: npx detox build --configuration android.emu.debug
+  # ============================================================
+  # Job 2: Validação de sintaxe Robot Framework (dry-run)
+  # Não requer Appium nem emulador — apenas verifica a estrutura
+  # dos arquivos .robot
+  # ============================================================
+  robot-syntax:
+    name: Validação Robot Framework (dry-run)
+    runs-on: ubuntu-latest
 
-      # ========================
-      # Rodar testes E2E (Detox)
-      # ========================
-      - name: Testes E2E (Detox)
-        run: npx detox test --configuration android.emu.debug
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências Robot Framework
+        run: pip install -r requirements.txt
+
+      - name: Validar sintaxe dos testes Robot (dry-run)
+        run: robot --dryrun tests/mobile/

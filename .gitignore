@@ -39,3 +39,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Robot Framework output artifacts
+output.xml
+log.html
+report.html
