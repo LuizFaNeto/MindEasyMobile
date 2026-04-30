@@ -7,7 +7,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 
-// Mock data (sync with [id].tsx)
 const THERAPISTS = {
   '1': { nome: 'Dra. Andréa Soares', especialidade: 'Psicóloga Clínica' },
   '2': { nome: 'Dr. Carlos Alberto', especialidade: 'Terapia Infantil' },
@@ -28,7 +27,6 @@ export default function ReviewScreen() {
   const therapist = THERAPISTS[id as keyof typeof THERAPISTS] || THERAPISTS['default'];
 
   const handleSubmit = () => {
-    // Aqui seria a chamada para a API para salvar a avaliação
     console.log('Avaliação enviada:', { id, rating, comment });
     setVisible(true);
   };
@@ -44,16 +42,23 @@ export default function ReviewScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={[styles.container, { paddingTop: insets.top }]}>
+
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity 
+            testID="back-button"
+            onPress={() => router.back()} 
+            style={styles.backButton}
+          >
             <ArrowLeft size={24} color="#1E293B" />
           </TouchableOpacity>
+
           <Text style={styles.headerTitle}>Avaliar Profissional</Text>
           <View style={{ width: 40 }} />
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
+
           {/* Professional Card */}
           <Surface style={styles.therapistCard} elevation={1}>
             <Avatar.Text 
@@ -75,7 +80,8 @@ export default function ReviewScreen() {
             <View style={styles.starsContainer}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <TouchableOpacity 
-                  key={star} 
+                  key={star}
+                  testID={`star-${star}`}   
                   onPress={() => setRating(star)}
                   activeOpacity={0.7}
                 >
@@ -94,6 +100,7 @@ export default function ReviewScreen() {
           <View style={styles.commentSection}>
             <Text style={styles.sectionTitle}>Deixe um comentário (opcional)</Text>
             <TextInput
+              testID="comment-input"  
               style={styles.input}
               placeholder="Descreva o que você achou do atendimento..."
               placeholderTextColor="#94A3B8"
@@ -109,6 +116,7 @@ export default function ReviewScreen() {
         {/* Footer Button */}
         <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
           <Button 
+            testID="submit-button"  
             mode="contained" 
             onPress={handleSubmit}
             disabled={rating === 0}
@@ -123,67 +131,151 @@ export default function ReviewScreen() {
 
         {/* Success Modal */}
         <Portal>
-          <Dialog visible={visible} onDismiss={handleClose} style={styles.dialog}>
+          <Dialog 
+            testID="success-dialog"  
+            visible={visible} 
+            onDismiss={handleClose} 
+            style={styles.dialog}
+          >
             <Dialog.Title style={styles.dialogTitle}>Obrigado!</Dialog.Title>
             <Dialog.Content>
-              <Text style={styles.dialogText}>Sua avaliação foi enviada com sucesso e ajuda outros pacientes a encontrarem o melhor cuidado.</Text>
+              <Text style={styles.dialogText}>
+                Sua avaliação foi enviada com sucesso e ajuda outros pacientes a encontrarem o melhor cuidado.
+              </Text>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button onPress={handleClose} textColor={theme.primary}>Fechar</Button>
+              <Button 
+                testID="close-dialog-button"
+                onPress={handleClose} 
+                textColor={theme.primary}
+              >
+                Fechar
+              </Button>
             </Dialog.Actions>
           </Dialog>
         </Portal>
+
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
-  header: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-    backgroundColor: '#FFF'
+    height: 60,
   },
-  backButton: { padding: 8 },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
-  scrollContent: { padding: 24 },
-  therapistCard: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    padding: 16, 
-    borderRadius: 16, 
+  backButton: {
+    padding: 8,
+    borderRadius: 12,
     backgroundColor: '#FFF',
-    marginBottom: 32
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  therapistInfo: { marginLeft: 16 },
-  therapistName: { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
-  therapistSpec: { fontSize: 14, color: '#64748B' },
-  ratingSection: { alignItems: 'center', marginBottom: 32 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#1E293B', marginBottom: 8 },
-  sectionSubtitle: { fontSize: 14, color: '#64748B', marginBottom: 20 },
-  starsContainer: { flexDirection: 'row', gap: 8 },
-  commentSection: { marginBottom: 20 },
-  input: { 
-    backgroundColor: '#FFF', 
-    borderRadius: 12, 
-    padding: 16, 
-    fontSize: 16, 
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  scrollContent: {
+    padding: 24,
+  },
+  therapistCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderRadius: 24,
+    backgroundColor: '#FFF',
+    marginBottom: 32,
+  },
+  therapistInfo: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  therapistName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1E293B',
+  },
+  therapistSpec: {
+    fontSize: 14,
+    color: '#64748B',
+    marginTop: 4,
+  },
+  ratingSection: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginBottom: 8,
+  },
+  sectionSubtitle: {
+    fontSize: 14,
+    color: '#64748B',
+    marginBottom: 20,
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  commentSection: {
+    marginBottom: 32,
+  },
+  input: {
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    padding: 16,
+    fontSize: 16,
     color: '#1E293B',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    minHeight: 120
+    marginTop: 12,
   },
-  footer: { paddingHorizontal: 24, backgroundColor: '#FFF', paddingTop: 20 },
-  submitBtn: { borderRadius: 12 },
-  submitBtnContent: { height: 56 },
-  submitBtnLabel: { fontSize: 16, fontWeight: 'bold' },
-  dialog: { borderRadius: 20, backgroundColor: '#FFF' },
-  dialogTitle: { textAlign: 'center', fontWeight: 'bold', color: '#1E293B' },
-  dialogText: { textAlign: 'center', color: '#64748B', fontSize: 16, lineHeight: 24 },
-});
+  footer: {
+    paddingHorizontal: 24,
+    backgroundColor: '#FFF',
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  submitBtn: {
+    borderRadius: 16,
+    elevation: 0,
+  },
+  submitBtnContent: {
+    height: 56,
+    flexDirection: 'row-reverse',
+  },
+  submitBtnLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginHorizontal: 12,
+  },
+  dialog: {
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+  },
+  dialogTitle: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  dialogText: {
+    textAlign: 'center',
+    color: '#64748B',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+});

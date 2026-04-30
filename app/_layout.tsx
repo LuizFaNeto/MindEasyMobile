@@ -11,6 +11,7 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         {/* A tela de detalhes do terapeuta */}
         <Stack.Screen name="therapist/[id]" options={{ title: 'Perfil do Profissional', headerShown: false }} />
+        <Stack.Screen name="therapist/book" options={{ title: 'Agendar Consulta', headerShown: false }} />
         <Stack.Screen name="therapist/review" options={{ title: 'Avaliar Profissional', headerShown: false }} />
         <Stack.Screen name="call/[id]" options={{ title: 'Vídeo Chamada', headerShown: false }} />
         <Stack.Screen name="notifications" options={{ title: 'Notificações', headerShown: false }} />
