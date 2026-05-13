@@ -4,18 +4,42 @@ import { TextInput, Button, Text, Surface } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { LogIn, Mail, Lock, UserPlus } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { login } from '../../services/authService';
+import { useUserStore } from '../../store/userStore';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleLogin = () => {
-    // Aqui você validaria os dados
-    if (email && password) {
+  const router = useRouter();
+  const setUser = useUserStore((state) => state.setUser);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError('Por favor, preencha todos os campos.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const data = await login({ username: email, password });
+      setUser(data.id, data.nome, data.email, data.token);
       router.replace('/(tabs)');
-    } else {
-      alert("Por favor, preencha todos os campos.");
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 401 || status === 403) {
+        setError('E-mail ou senha inválidos.');
+      } else if (status === 404) {
+        setError('Usuário não encontrado.');
+      } else {
+        setError('Erro de conexão. Verifique se a API está rodando.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,7 +63,7 @@ export default function LoginScreen() {
               <TextInput
                 label="E-mail"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(v) => { setEmail(v); setError(''); }}
                 mode="flat"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -51,7 +75,7 @@ export default function LoginScreen() {
               <TextInput
                 label="Senha"
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={(v) => { setPassword(v); setError(''); }}
                 mode="flat"
                 secureTextEntry
                 left={<TextInput.Icon icon={() => <Lock size={20} color="#0284c7" />} />}
@@ -59,20 +83,24 @@ export default function LoginScreen() {
                 activeUnderlineColor="#0284c7"
               />
 
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
               <Button
                 mode="contained"
                 onPress={handleLogin}
+                loading={loading}
+                disabled={loading}
                 style={styles.button}
                 contentStyle={styles.buttonContent}
                 labelStyle={styles.buttonLabel}
                 icon={() => <LogIn size={18} color="#fff" />}
               >
-                Entrar
+                {loading ? 'Entrando...' : 'Entrar'}
               </Button>
 
-              <Button 
-                mode="text" 
-                onPress={() => router.replace('/(auth)/register')} 
+              <Button
+                mode="text"
+                onPress={() => router.replace('/(auth)/register')}
                 style={styles.backButton}
                 labelStyle={{ color: '#0284c7', fontWeight: 'bold' }}
                 icon={() => <UserPlus size={16} color="#0284c7" />}
@@ -96,6 +124,7 @@ const styles = StyleSheet.create({
   subtitle: { color: '#0c4a6e', opacity: 0.7, textAlign: 'center' },
   card: { padding: 28, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.9)' },
   input: { marginBottom: 16, backgroundColor: 'transparent' },
+  errorText: { color: '#DC2626', fontSize: 13, textAlign: 'center', marginBottom: 8, marginTop: -8 },
   button: { marginTop: 8, borderRadius: 12, backgroundColor: '#0284c7' },
   buttonContent: { height: 48 },
   buttonLabel: { fontWeight: 'bold' },

@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { Text, Button, Surface, Avatar, Portal, Dialog } from 'react-native-paper';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, Calendar as CalendarIcon, Clock, CheckCircle2 } from 'lucide-react-native';
+import { ArrowLeft, Clock, CheckCircle2, AlertCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
+import { criarAgendamento } from '@/services/agendamentoService';
+import { useUserStore } from '@/store/userStore';
 
-// Mock available times for the therapist
 const AVAILABLE_TIMES = [
   '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'
 ];
@@ -15,12 +16,10 @@ const AVAILABLE_TIMES = [
 const getAvailableDates = () => {
   const dates = [];
   const daysMap = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-  
+
   for (let i = 0; i < 7; i++) {
     const d = new Date();
     d.setDate(d.getDate() + i);
-    
-    // Skip weekends if you want, but for therapy mock let's show 7 days
     dates.push({
       day: daysMap[d.getDay()],
       date: d.getDate().toString(),
@@ -39,25 +38,45 @@ export default function BookAppointmentScreen() {
   const theme = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 
+  const pacienteId = useUserStore((state) => state.id);
+
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleConfirm = async () => {
-    setLoading(true);
-    // Simulating API call to Java Backend (POST /api/agendamentos)
-    console.log('Enviando agendamento para API:', {
-      terapeutaId: id,
-      data: selectedDate,
-      horaInicio: selectedTime,
-      pacienteId: 1 // Mock local user ID
-    });
+    if (!pacienteId) {
+      setErrorMessage('Sessão expirada. Faça login novamente.');
+      setErrorVisible(true);
+      return;
+    }
 
-    setTimeout(() => {
-      setLoading(false);
+    setLoading(true);
+    try {
+      await criarAgendamento({
+        pacienteId: pacienteId,
+        terapeutaId: Number(id),
+        data: selectedDate,
+        horaInicio: selectedTime + ':00', // API espera HH:mm:ss
+        status: 'PENDENTE',
+      });
       setVisible(true);
-    }, 1500);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.response?.data || '';
+      if (err?.response?.status === 400) {
+        setErrorMessage(typeof msg === 'string' ? msg : 'Horário indisponível. Escolha outro horário.');
+      } else if (err?.response?.status === 404) {
+        setErrorMessage('Terapeuta ou paciente não encontrado na API.');
+      } else {
+        setErrorMessage('Erro de conexão. Verifique se a API está rodando.');
+      }
+      setErrorVisible(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -91,11 +110,11 @@ export default function BookAppointmentScreen() {
           <Text style={styles.sectionTitle}>Selecione o Dia</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dateList}>
             {AVAILABLE_DATES.map((item) => (
-              <TouchableOpacity 
+              <TouchableOpacity
                 key={item.full}
                 onPress={() => setSelectedDate(item.full)}
                 style={[
-                  styles.dateItem, 
+                  styles.dateItem,
                   selectedDate === item.full && { backgroundColor: theme.primary, borderColor: theme.primary }
                 ]}
               >
@@ -111,11 +130,11 @@ export default function BookAppointmentScreen() {
           <Text style={styles.sectionTitle}>Selecione o Horário</Text>
           <View style={styles.timeGrid}>
             {AVAILABLE_TIMES.map((time) => (
-              <TouchableOpacity 
+              <TouchableOpacity
                 key={time}
                 onPress={() => setSelectedTime(time)}
                 style={[
-                  styles.timeItem, 
+                  styles.timeItem,
                   selectedTime === time && { backgroundColor: theme.primary, borderColor: theme.primary }
                 ]}
               >
@@ -129,33 +148,51 @@ export default function BookAppointmentScreen() {
 
       {/* Footer Button */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
-        <Button 
-          mode="contained" 
+        <Button
+          mode="contained"
           onPress={handleConfirm}
           disabled={!selectedDate || !selectedTime || loading}
           loading={loading}
           style={[styles.bookBtn, { backgroundColor: (!selectedDate || !selectedTime) ? '#CBD5E1' : theme.primary }]}
           contentStyle={styles.bookBtnContent}
         >
-          Confirmar Agendamento
+          {loading ? 'Agendando...' : 'Confirmar Agendamento'}
         </Button>
       </View>
 
-      {/* Success Modal */}
+      {/* Success Dialog */}
       <Portal>
         <Dialog visible={visible} onDismiss={handleClose} style={styles.dialog}>
           <View style={styles.successIconContainer}>
             <CheckCircle2 size={64} color="#10B981" />
           </View>
-          <Dialog.Title style={styles.dialogTitle}>Sucesso!</Dialog.Title>
+          <Dialog.Title style={styles.dialogTitle}>Agendado com sucesso!</Dialog.Title>
           <Dialog.Content>
             <Text style={styles.dialogText}>
-              Sua consulta com {nome} foi agendada para o dia {selectedDate.split('-').reverse().join('/')} às {selectedTime}.
+              Sua consulta com {nome} foi agendada para {selectedDate.split('-').reverse().join('/')} às {selectedTime}.
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={handleClose} textColor={theme.primary} labelStyle={{ fontWeight: 'bold' }}>
               Ver meus agendamentos
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
+      {/* Error Dialog */}
+      <Portal>
+        <Dialog visible={errorVisible} onDismiss={() => setErrorVisible(false)} style={styles.dialog}>
+          <View style={styles.successIconContainer}>
+            <AlertCircle size={64} color="#EF4444" />
+          </View>
+          <Dialog.Title style={styles.dialogTitle}>Erro no agendamento</Dialog.Title>
+          <Dialog.Content>
+            <Text style={styles.dialogText}>{errorMessage}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setErrorVisible(false)} textColor="#EF4444" labelStyle={{ fontWeight: 'bold' }}>
+              Fechar
             </Button>
           </Dialog.Actions>
         </Dialog>
