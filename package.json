@@ -3,21 +3,16 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "private": true,
-
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-
     "test": "jest",
     "test:unit": "jest tests/unit",
-
-    
-
+    "test:e2e": "detox test",
     "db:push": "npx prisma db push --schema=./backend/prisma/schema.prisma"
   },
-
   "dependencies": {
     "@prisma/client": "^6.4.1",
     "@react-navigation/native": "^7.1.28",
@@ -31,13 +26,10 @@
     "expo-status-bar": "~55.0.4",
     "expo-symbols": "~55.0.5",
     "expo-web-browser": "~55.0.9",
-
     "lucide-react-native": "^0.577.0",
-
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.2",
-
     "react-native-paper": "^5.15.0",
     "react-native-reanimated": "4.2.1",
     "react-native-safe-area-context": "~5.6.2",
@@ -46,21 +38,17 @@
     "react-native-web": "~0.21.0",
     "react-native-webview": "13.16.0",
     "react-native-worklets": "0.7.2",
-
     "zustand": "^5.0.11"
   },
-
   "devDependencies": {
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^13.3.3",
     "@types/react": "~19.2.2",
-
+    "@types/react-native": "^0.72.8",
     "jest": "^29.7.0",
     "jest-expo": "^55.0.9",
-
-    "react-test-renderer": "19.2.0",
-
     "prisma": "^6.4.1",
+    "react-test-renderer": "19.2.0",
     "typescript": "~5.9.2"
   }
 }
