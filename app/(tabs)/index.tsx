@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Bell, Search, SlidersHorizontal, Star, X } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { Badge, Text, Portal, Modal, Button } from 'react-native-paper';
+import { Badge, Button, Modal, Portal, Text } from 'react-native-paper';
 import Colors from '../../constants/Colors';
 import { useUserStore } from '../../store/userStore';
 
@@ -27,7 +27,7 @@ const TODOS_TERAPEUTAS = [
   {
     id: '3',
     nome: 'Dra. Juliana Mendes',
-    especialidade: 'Terapia de Casal',
+    especialidade: 'Terapia de Casal',  
     nota: 4.8,
     imagem: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=400',
   },

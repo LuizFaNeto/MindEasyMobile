@@ -27,7 +27,7 @@ public class PacienteRequestDTO {
     @NotNull(message = "Sexo nao pode estar vazio")
     private Sexo sexo;
 
-    @NotBlank(message = "Data de nascimento nao pode estar vazia")
+    @NotNull(message = "Data de nascimento nao pode estar vazia")
     @Past(message = "data de nascimento invalida")
     private LocalDate dataNascimento;
 
