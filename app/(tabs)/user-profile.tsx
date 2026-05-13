@@ -41,7 +41,7 @@ export default function UserProfileScreen() {
         </Card>
       </View>
 
-      <View style={styles.section}>
+      <View style={[styles.section, {height: 30}]}>
         <Text style={[styles.sectionTitle, { color: theme.muted }]}>PREFERÊNCIAS</Text>
         <Card style={[styles.card, { backgroundColor: theme.cardBackground }]}>
           <MenuOption icon={Settings} label="Configurações do App" />
