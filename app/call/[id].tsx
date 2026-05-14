@@ -29,8 +29,9 @@ export default function CallScreen() {
           <Text style={styles.roomLabel}>Consulta Online com</Text>
           <Text style={styles.therapistName}>{nome || 'Profissional'}</Text>
         </View>
-        <TouchableOpacity 
-          onPress={() => router.back()} 
+        <TouchableOpacity
+          testID="call-close"
+          onPress={() => router.back()}
           style={styles.closeBtn}
         >
           <X size={24} color="#FFF" />

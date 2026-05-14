@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { Text, Button, Surface, Avatar, Portal, Dialog } from 'react-native-paper';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -29,9 +29,8 @@ const getAvailableDates = () => {
   return dates;
 };
 
-const AVAILABLE_DATES = getAvailableDates();
-
 export default function BookAppointmentScreen() {
+  const AVAILABLE_DATES = useMemo(() => getAvailableDates(), []);
   const { id, nome } = useLocalSearchParams<{ id: string, nome: string }>();
   const router = useRouter();
   const colorScheme = useColorScheme();

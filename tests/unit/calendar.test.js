@@ -7,10 +7,18 @@ jest.mock('@/components/useColorScheme', () => ({
 }));
 
 jest.mock('@/constants/Colors', () => ({
-  light: {
-    background: '#fff',
-    text: '#000',
-    tint: '#2563EB',
+  __esModule: true,
+  default: {
+    light: {
+      background: '#fff',
+      text: '#000',
+      tint: '#2563EB',
+    },
+    dark: {
+      background: '#000',
+      text: '#fff',
+      tint: '#fff',
+    },
   },
 }));
 
@@ -33,36 +41,25 @@ describe('CalendarScreen', () => {
     expect(getByText('15:00')).toBeTruthy();
   });
 
-  //  TESTE 3 - Estado vazio ao mudar data
+  //  TESTE 3 - Estado vazio ao mudar data (primeiro dia da faixa = hoje - 3)
   test('deve mostrar mensagem quando não há consultas', () => {
-    const { getByText, queryByText } = render(<CalendarScreen />);
+    const { UNSAFE_getAllByType, queryByText } = render(<CalendarScreen />);
+    const { TouchableOpacity } = require('react-native');
+    const touchables = UNSAFE_getAllByType(TouchableOpacity);
+    fireEvent.press(touchables[0]);
 
-    // pega algum dia diferente (ex: o primeiro botão)
-    const dayButton = getByText((content) => {
-      return content !== '' && !isNaN(Number(content)); // pega número do dia
-    });
-
-    fireEvent.press(dayButton);
-
-    // pode ou não ter consulta, então validamos fallback
-    const emptyText = queryByText('Nenhuma consulta para este dia.');
-
-    if (emptyText) {
-      expect(emptyText).toBeTruthy();
-    }
+    expect(queryByText('Nenhuma consulta para este dia.')).toBeTruthy();
   });
 
   //  TESTE 4 - Botão de chamada
   test('deve chamar alert ao clicar no botão', () => {
-    const alertMock = jest.spyOn(global, 'alert').mockImplementation(() => {});
+    global.alert = jest.fn();
 
     const { getByText } = render(<CalendarScreen />);
 
     fireEvent.press(getByText('Entrar na Chamada'));
 
-    expect(alertMock).toHaveBeenCalledWith('Iniciando chamada...');
-
-    alertMock.mockRestore();
+    expect(global.alert).toHaveBeenCalledWith('Iniciando chamada...');
   });
 
 });
