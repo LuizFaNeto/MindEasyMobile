@@ -7,7 +7,7 @@ import { useUserStore } from '../store/userStore';
 // Use localhost no iOS Simulator
 // Em dispositivo físico, use o IP local da máquina (ex: 192.168.1.100)
 // =====================================================================
-export const BASE_URL = 'http://10.0.2.2:8080';
+export const BASE_URL = 'http://localhost:8080';
 
 export const api = axios.create({
   baseURL: BASE_URL,
