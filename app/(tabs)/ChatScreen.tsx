@@ -69,7 +69,7 @@ export default function ChatScreen() {
           onChangeText={setMessage}
         />
 
-        <TouchableOpacity onPress={sendMessage}>
+        <TouchableOpacity testID="chat-send" onPress={sendMessage}>
           <Send size={22} color="#2563EB" />
         </TouchableOpacity>
       </View>

@@ -39,3 +39,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Jest cache (local + CI-friendly path)
+.jest-cache
+
+# Robot Framework output artifacts
+output.xml
+log.html
+report.html

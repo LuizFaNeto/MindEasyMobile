@@ -130,6 +130,7 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <Text style={styles.brandTitle}>Mind Easy</Text>
           <TouchableOpacity
+            testID="header-notifications"
             style={styles.notificationBtn}
             onPress={() => router.push('/notifications')}
           >
