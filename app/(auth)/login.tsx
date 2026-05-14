@@ -1,93 +1,121 @@
 import React, { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Button, Surface, Text, TextInput } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import { Lock, LogIn, Mail, UserPlus } from 'lucide-react-native';
+import { login } from '../../services/authService';
+import { useUserStore } from '../../store/userStore';
+import { useRouter } from 'expo-router'; // faltava importar
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const router = useRouter();
+  const setUser = useUserStore((state) => state.setUser);
+
   const emailRef = useRef<any>(null);
   const passRef = useRef<any>(null);
 
-  const handleLogin = () => {
-    if (email && password) router.replace('/(tabs)');
-    else alert('Por favor, preencha todos os campos.');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError('Por favor, preencha todos os campos.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const data = await login({ username: email, password });
+      setUser(data.id, data.nome, data.email, data.token);
+      router.replace('/(tabs)');
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 401 || status === 403) {
+        setError('E-mail ou senha inválidos.');
+      } else if (status === 404) {
+        setError('Usuário não encontrado.');
+      } else {
+        setError('Erro de conexão. Verifique se a API está rodando.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <LinearGradient colors={['#E0F2FE', '#BAE6FD', '#7DD3FC']} style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="always"
-        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
-      >
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.innerContainer}>
-          <View style={styles.header}>
-            <Text variant="headlineMedium" style={styles.title}>Bem-vindo de volta!</Text>
-            <Text variant="bodyMedium" style={styles.subtitle}>Acesse sua conta para continuar.</Text>
-          </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <LinearGradient colors={['#E0F2FE', '#BAE6FD', '#7DD3FC']} style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        >
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.innerContainer}>
+            <View style={styles.header}>
+              <Text variant="headlineMedium" style={styles.title}>Bem-vindo de volta!</Text>
+              <Text variant="bodyMedium" style={styles.subtitle}>Acesse sua conta para continuar.</Text>
+            </View>
 
-          <Surface style={styles.card} elevation={4}>
-            <Pressable style={styles.field} onPress={() => emailRef.current?.focus()}>
-              <Mail size={20} color="#0284c7" />
-              <TextInput
-                ref={emailRef}
-                mode="flat"
-                placeholder="E-mail"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                style={styles.fieldInput}
-                underlineColor="transparent"
-                activeUnderlineColor="transparent"
-              />
-            </Pressable>
+            <Surface style={styles.card} elevation={4}>
+              <Pressable style={styles.field} onPress={() => emailRef.current?.focus()}>
+                <TextInput
+                  ref={emailRef}
+                  placeholder="E-mail"
+                  value={email}
+                  onChangeText={(v) => { setEmail(v); setError(''); }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  style={styles.fieldInput}
+                  underlineColor="transparent"
+                  activeUnderlineColor="transparent"
+                />
+              </Pressable>
 
-            <Pressable style={styles.field} onPress={() => passRef.current?.focus()}>
-              <Lock size={20} color="#0284c7" />
-              <TextInput
-                ref={passRef}
-                mode="flat"
-                placeholder="Senha"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                style={styles.fieldInput}
-                underlineColor="transparent"
-                activeUnderlineColor="transparent"
-              />
-            </Pressable>
+              <Pressable style={styles.field} onPress={() => passRef.current?.focus()}>
+                <TextInput
+                  ref={passRef}
+                  placeholder="Senha"
+                  value={password}
+                  onChangeText={(v) => { setPassword(v); setError(''); }}
+                  secureTextEntry
+                  style={styles.fieldInput}
+                  underlineColor="transparent"
+                  activeUnderlineColor="transparent"
+                />
+              </Pressable>
 
-            <Button
-              mode="contained"
-              onPress={handleLogin}
-              style={styles.button}
-              contentStyle={styles.buttonContent}
-              labelStyle={styles.buttonLabel}
-              icon={() => <LogIn size={18} color="#fff" />}
-            >
-              Entrar
-            </Button>
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-            <Button
-              mode="text"
-              onPress={() => router.replace('/(auth)/register')}
-              style={styles.backButton}
-              labelStyle={{ color: '#0284c7', fontWeight: 'bold' }}
-              icon={() => <UserPlus size={16} color="#0284c7" />}
-            >
-              Não tenho conta. Cadastrar
-            </Button>
-          </Surface>
-        </KeyboardAvoidingView>
-      </ScrollView>
-    </LinearGradient>
+              <Button
+                mode="contained"
+                onPress={handleLogin}
+                loading={loading}
+                disabled={loading}
+                style={styles.button}
+                contentStyle={styles.buttonContent}
+                labelStyle={styles.buttonLabel}
+              >
+                {loading ? 'Entrando...' : 'Entrar'}
+              </Button>
+
+              <Button
+                mode="text"
+                onPress={() => router.replace('/(auth)/register')}
+                style={styles.backButton}
+                labelStyle={{ color: '#0284c7', fontWeight: 'bold' }}
+              >
+                Não tenho conta. Cadastrar
+              </Button>
+            </Surface>
+          </KeyboardAvoidingView>
+        </ScrollView>
+      </LinearGradient>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -99,23 +127,11 @@ const styles = StyleSheet.create({
   title: { fontWeight: '800', color: '#0369a1', textAlign: 'center' },
   subtitle: { color: '#0c4a6e', opacity: 0.7, textAlign: 'center' },
   card: { padding: 28, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.9)' },
-
-  field: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    borderWidth: 1,
-    borderColor: '#D9E6F2',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginBottom: 16,
-    backgroundColor: 'rgba(255,255,255,0.6)',
-  },
-  fieldInput: { flex: 1, backgroundColor: 'transparent' },
-
+  errorText: { color: '#DC2626', fontSize: 13, textAlign: 'center', marginBottom: 8, marginTop: -8 },
   button: { marginTop: 8, borderRadius: 12, backgroundColor: '#0284c7' },
   buttonContent: { height: 48 },
   buttonLabel: { fontWeight: 'bold' },
   backButton: { marginTop: 12 },
+  field: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
+  fieldInput: { flex: 1, marginLeft: 8, backgroundColor: 'transparent' },
 });

@@ -1,20 +1,41 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { PaperProvider } from 'react-native-paper';
+import { useEffect } from 'react';
+import { useUserStore } from '../store/userStore';
+
+// Componente separado para a lógica de proteção de rotas
+function RouteGuard() {
+  const router = useRouter();
+  const segments = useSegments();
+  const isLogged = useUserStore((state) => state.isLogged);
+
+  useEffect(() => {
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!isLogged && !inAuthGroup) {
+      // Não logado mas tentando acessar área protegida → redireciona para login
+      router.replace('/(auth)/login');
+    } else if (isLogged && inAuthGroup) {
+      // Já logado mas ainda nas telas de auth → redireciona para home
+      router.replace('/(tabs)');
+    }
+  }, [isLogged, segments]);
+
+  return null;
+}
 
 export default function RootLayout() {
   return (
     <PaperProvider>
+      <RouteGuard />
       <Stack>
-        {/* O (tabs) é o grupo principal após o login */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        {/* O (auth) não tem header próprio aqui pois as telas terão os seus */}
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        {/* A tela de detalhes do terapeuta */}
-        <Stack.Screen name="therapist/[id]" options={{ title: 'Perfil do Profissional', headerShown: false }} />
-        <Stack.Screen name="therapist/book" options={{ title: 'Agendar Consulta', headerShown: false }} />
-        <Stack.Screen name="therapist/review" options={{ title: 'Avaliar Profissional', headerShown: false }} />
-        <Stack.Screen name="call/[id]" options={{ title: 'Vídeo Chamada', headerShown: false }} />
-        <Stack.Screen name="notifications" options={{ title: 'Notificações', headerShown: false }} />
+        <Stack.Screen name="therapist/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="therapist/book" options={{ headerShown: false }} />
+        <Stack.Screen name="therapist/review" options={{ headerShown: false }} />
+        <Stack.Screen name="call/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="notifications" options={{ headerShown: false }} />
       </Stack>
     </PaperProvider>
   );

@@ -1,7 +1,9 @@
 package com.br.mindeasy.controller;
 
+import com.br.mindeasy.model.Paciente;
 import com.br.mindeasy.security.JwtTokenUtil;
 import com.br.mindeasy.security.UserDetailsServiceConfig;
+import com.br.mindeasy.service.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,10 +27,13 @@ public class AuthenticationController {
     @Autowired
     private UserDetailsServiceConfig userDetailsService;
 
-    // Endpoint de Login
+    @Autowired
+    private PacienteService pacienteService;
+
+    // Endpoint de Login — retorna token + dados do paciente
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody Map<String, String> authenticationRequest) throws Exception {
-        
+
         String username = authenticationRequest.get("username");
         String password = authenticationRequest.get("password");
 
@@ -41,7 +46,18 @@ public class AuthenticationController {
         // Gera o token
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        // Retorna o token
-        return ResponseEntity.ok(Map.of("token", token));
+        // Busca o paciente pelo email para retornar o ID e nome
+        try {
+            Paciente paciente = pacienteService.buscarPorEmail(username);
+            return ResponseEntity.ok(Map.of(
+                "token", token,
+                "id", paciente.getId(),
+                "nome", paciente.getNome(),
+                "email", paciente.getEmail()
+            ));
+        } catch (Exception e) {
+            // Se não for paciente (ex: terapeuta), retorna só o token
+            return ResponseEntity.ok(Map.of("token", token));
+        }
     }
 }

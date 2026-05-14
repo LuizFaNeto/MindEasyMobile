@@ -136,7 +136,7 @@ export default function RegisterScreen() {
               <TextInput
                 label="E-mail"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(v) => { setEmail(v); setError(''); }}
                 mode="flat"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -204,9 +204,40 @@ export default function RegisterScreen() {
                 activeUnderlineColor="#0284c7"
               />
 
+              <TextInput
+                label="Data de Nascimento (DD/MM/AAAA)"
+                value={dataNascimento}
+                onChangeText={(v) => { setDataNascimento(formatDate(v)); setError(''); }}
+                mode="flat"
+                keyboardType="numeric"
+                maxLength={10}
+                left={<TextInput.Icon icon={() => <Calendar size={20} color="#0284c7" />} />}
+                style={styles.input}
+                activeUnderlineColor="#0284c7"
+              />
+
+              <Text style={styles.sectionLabel}>Sexo</Text>
+              <View style={styles.sexoRow}>
+                {SEXO_OPTIONS.map((opt) => (
+                  <TouchableOpacity
+                    key={opt.value}
+                    style={[styles.sexoBtn, sexo === opt.value && styles.sexoBtnActive]}
+                    onPress={() => setSexo(opt.value)}
+                  >
+                    <Text style={[styles.sexoBtnText, sexo === opt.value && styles.sexoBtnTextActive]}>
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
               <Button
                 mode="contained"
                 onPress={handleRegister}
+                loading={loading}
+                disabled={loading}
                 style={styles.button}
                 contentStyle={styles.buttonContent}
                 labelStyle={styles.buttonLabel}
@@ -214,7 +245,7 @@ export default function RegisterScreen() {
                   <UserPlus size={18} color="#fff" />
                 )}
               >
-                Finalizar Cadastro
+                {loading ? 'Cadastrando...' : 'Finalizar Cadastro'}
               </Button>
 
               <Button
