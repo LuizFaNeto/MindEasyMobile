@@ -23,7 +23,7 @@ public class AgendamentoRequestDTO {
     @NotNull
     private LocalTime horaInicio;
 
-    @NotNull
+    // Opcional: o backend define AGENDADO automaticamente ao criar
     private StatusAgendamento status;
 
 
