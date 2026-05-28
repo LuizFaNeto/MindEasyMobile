@@ -80,3 +80,15 @@ CREATE TABLE IF NOT EXISTS agendamentos (
   INDEX idx_ag_paciente_data (paciente_id, data, hora_inicio),
   INDEX idx_ag_terapeuta_data (terapeuta_id, data, hora_inicio)
 ) ENGINE=InnoDB;
+
+-- =========================
+-- FEEDBACKS
+-- =========================
+CREATE TABLE IF NOT EXISTS feedbacks (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  paciente_id BIGINT NOT NULL,
+  mensagem VARCHAR(1000) NOT NULL,
+  CONSTRAINT fk_feedback_paciente
+    FOREIGN KEY (paciente_id) REFERENCES pacientes(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;

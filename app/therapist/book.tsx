@@ -60,7 +60,6 @@ export default function BookAppointmentScreen() {
         terapeutaId: Number(id),
         data: selectedDate,
         horaInicio: selectedTime + ':00', // API espera HH:mm:ss
-        status: 'PENDENTE',
       });
       setVisible(true);
     } catch (err: any) {

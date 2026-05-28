@@ -14,6 +14,9 @@ export default function CalendarScreen() {
   const router = useRouter();
   const pacienteId = useUserStore((state) => state.id);
 
+  // Pega o id do paciente logado no store global
+  const pacienteId = useUserStore((state) => state.id);
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [appointments, setAppointments] = useState<AgendamentoResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +32,11 @@ export default function CalendarScreen() {
   }, []);
 
   const fetchAppointments = useCallback(() => {
+    if (!pacienteId) {
+      setError('Usuário não identificado. Faça login novamente.');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     if (!pacienteId) {
@@ -61,25 +69,24 @@ export default function CalendarScreen() {
     });
   }, [appointments, selectedDate]);
 
+  // Cores e labels alinhados com enum Java: AGENDADO, CANCELADO, REALIZADO, FALTOU
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'AGENDADO': return '#3B82F6';
-      case 'CONFIRMADO': return '#10B981';
-      case 'CONCLUIDO':
-      case 'REALIZADO': return '#6B7280';
-      case 'CANCELADO': return '#EF4444';
-      default: return '#64748B';
+      case 'AGENDADO':  return '#3B82F6'; // azul
+      case 'REALIZADO': return '#10B981'; // verde
+      case 'CANCELADO': return '#EF4444'; // vermelho
+      case 'FALTOU':    return '#F59E0B'; // laranja
+      default:          return '#64748B';
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'AGENDADO': return 'Agendado';
-      case 'CONFIRMADO': return 'Confirmado';
-      case 'CONCLUIDO':
-      case 'REALIZADO': return 'Concluído';
+      case 'AGENDADO':  return 'Agendado';
+      case 'REALIZADO': return 'Realizado';
       case 'CANCELADO': return 'Cancelado';
-      default: return status;
+      case 'FALTOU':    return 'Faltou';
+      default:          return status;
     }
   };
 
@@ -173,7 +180,7 @@ export default function CalendarScreen() {
                 </View>
 
                 {/* Botão de entrar só aparece para agendamentos ativos */}
-                {(item.status === 'AGENDADO' || item.status === 'CONFIRMADO') && (
+                {item.status === 'AGENDADO' && (
                   <View style={styles.footer}>
                     <Button
                       mode="contained"
