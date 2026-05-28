@@ -4,13 +4,17 @@ import { Text, Card, Avatar, Button } from 'react-native-paper';
 import { Calendar as CalendarIcon, Clock, Video, RefreshCw } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { listarAgendamentos, AgendamentoResponse } from '@/services/agendamentoService';
+import { listarAgendamentosPorPaciente, AgendamentoResponse } from '@/services/agendamentoService';
+import { useUserStore } from '@/store/userStore';
 import { useRouter } from 'expo-router';
 
 export default function CalendarScreen() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme];
   const router = useRouter();
+
+  // Pega o id do paciente logado no store global
+  const pacienteId = useUserStore((state) => state.id);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [appointments, setAppointments] = useState<AgendamentoResponse[]>([]);
@@ -27,13 +31,18 @@ export default function CalendarScreen() {
   }, []);
 
   const fetchAppointments = useCallback(() => {
+    if (!pacienteId) {
+      setError('Usuário não identificado. Faça login novamente.');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
-    listarAgendamentos()
+    listarAgendamentosPorPaciente(pacienteId)
       .then((data) => setAppointments(data))
       .catch(() => setError('Não foi possível carregar os agendamentos.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [pacienteId]);
 
   useEffect(() => {
     fetchAppointments();
@@ -52,25 +61,24 @@ export default function CalendarScreen() {
     });
   }, [appointments, selectedDate]);
 
+  // Cores e labels alinhados com enum Java: AGENDADO, CANCELADO, REALIZADO, FALTOU
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'AGENDADO': return '#3B82F6';
-      case 'CONFIRMADO': return '#10B981';
-      case 'CONCLUIDO':
-      case 'REALIZADO': return '#6B7280';
-      case 'CANCELADO': return '#EF4444';
-      default: return '#64748B';
+      case 'AGENDADO':  return '#3B82F6'; // azul
+      case 'REALIZADO': return '#10B981'; // verde
+      case 'CANCELADO': return '#EF4444'; // vermelho
+      case 'FALTOU':    return '#F59E0B'; // laranja
+      default:          return '#64748B';
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'AGENDADO': return 'Agendado';
-      case 'CONFIRMADO': return 'Confirmado';
-      case 'CONCLUIDO':
-      case 'REALIZADO': return 'Concluído';
+      case 'AGENDADO':  return 'Agendado';
+      case 'REALIZADO': return 'Realizado';
       case 'CANCELADO': return 'Cancelado';
-      default: return status;
+      case 'FALTOU':    return 'Faltou';
+      default:          return status;
     }
   };
 
@@ -164,7 +172,7 @@ export default function CalendarScreen() {
                 </View>
 
                 {/* Botão de entrar só aparece para agendamentos ativos */}
-                {(item.status === 'AGENDADO' || item.status === 'CONFIRMADO') && (
+                {item.status === 'AGENDADO' && (
                   <View style={styles.footer}>
                     <Button
                       mode="contained"
