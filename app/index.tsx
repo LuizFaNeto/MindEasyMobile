@@ -1,7 +1,12 @@
 import { Redirect } from 'expo-router';
+import { useUserStore } from '../store/userStore';
 
 export default function Index() {
-  // Por enquanto, vamos forçar o app a sempre abrir no Login
-  // Futuramente, aqui você verificará no Zustand se o usuário já está logado
-  return <Redirect href="/(auth)/register" />;
+  const isLogged = useUserStore((state) => state.isLogged);
+
+  if (isLogged) {
+    return <Redirect href="/(tabs)" />;
+  }
+
+  return <Redirect href="/(auth)/login" />;
 }

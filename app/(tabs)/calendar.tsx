@@ -4,13 +4,15 @@ import { Text, Card, Avatar, Button } from 'react-native-paper';
 import { Calendar as CalendarIcon, Clock, Video, RefreshCw } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { listarAgendamentos, AgendamentoResponse } from '@/services/agendamentoService';
+import { listarAgendamentosPorPaciente, AgendamentoResponse } from '@/services/agendamentoService';
+import { useUserStore } from '@/store/userStore';
 import { useRouter } from 'expo-router';
 
 export default function CalendarScreen() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme];
   const router = useRouter();
+  const pacienteId = useUserStore((state) => state.id);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [appointments, setAppointments] = useState<AgendamentoResponse[]>([]);
@@ -29,11 +31,18 @@ export default function CalendarScreen() {
   const fetchAppointments = useCallback(() => {
     setLoading(true);
     setError('');
-    listarAgendamentos()
+    if (!pacienteId) {
+      setAppointments([]);
+      setError('Sessão expirada. Faça login novamente.');
+      setLoading(false);
+      return;
+    }
+
+    listarAgendamentosPorPaciente(pacienteId)
       .then((data) => setAppointments(data))
       .catch(() => setError('Não foi possível carregar os agendamentos.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [pacienteId]);
 
   useEffect(() => {
     fetchAppointments();

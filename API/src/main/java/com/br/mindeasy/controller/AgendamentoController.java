@@ -43,6 +43,12 @@ public class AgendamentoController {
         return ResponseEntity.ok(lista);
     }
 
+    @GetMapping("/pacientes/{idPaciente}")
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarPorPaciente(@PathVariable Long idPaciente) {
+        List<AgendamentoResponseDTO> lista = agendamentoService.listarPorPaciente(idPaciente);
+        return ResponseEntity.ok(lista);
+    }
+
     // GET: agendamentos realizados por um terapeuta específico no período selecionado
     @GetMapping("/terapeutas/{terapeutaId}/concluidos")
     public ResponseEntity<Long> contarConcluidosPorMes(

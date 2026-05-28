@@ -105,6 +105,16 @@ public class AgendamentoService {
             .collect(Collectors.toList());
     }
 
+    public List<AgendamentoResponseDTO> listarPorPaciente(Long idPaciente) {
+        if (!pacienteRepository.existsById(idPaciente)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Paciente não encontrado");
+        }
+
+        return agendamentoRepository.findByPacienteId(idPaciente).stream()
+            .map(a -> toResponseDTO(a, a.getPaciente(), a.getTerapeuta()))
+            .collect(Collectors.toList());
+    }
+
     public AgendamentoResponseDTO atualizar(Long id, AgendamentoRequestDTO dto) {
         Agendamento agendamento = agendamentoRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agendamento não encontrado"));
