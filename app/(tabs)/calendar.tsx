@@ -12,6 +12,7 @@ export default function CalendarScreen() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme];
   const router = useRouter();
+  const pacienteId = useUserStore((state) => state.id);
 
   // Pega o id do paciente logado no store global
   const pacienteId = useUserStore((state) => state.id);
@@ -38,6 +39,13 @@ export default function CalendarScreen() {
     }
     setLoading(true);
     setError('');
+    if (!pacienteId) {
+      setAppointments([]);
+      setError('Sessão expirada. Faça login novamente.');
+      setLoading(false);
+      return;
+    }
+
     listarAgendamentosPorPaciente(pacienteId)
       .then((data) => setAppointments(data))
       .catch(() => setError('Não foi possível carregar os agendamentos.'))
