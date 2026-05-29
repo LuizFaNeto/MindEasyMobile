@@ -18,7 +18,7 @@ export default function CallScreen() {
   const [loading, setLoading] = useState(true);
 
   // Configuração da sala do Jitsi
-  const roomName = `MindEasy-Room-${id || 'general'}`;
+  const roomName = `MindEasy_Paciente_${id || 'general'}`;
   const jitsiUrl = `https://meet.jit.si/${roomName}#config.startWithAudioMuted=false&config.startWithVideoMuted=false&interfaceConfig.TOOLBAR_BUTTONS=["microphone","camera","closedcaptions","desktop","fullscreen","fodeviceselection","hangup","profile","chat","recording","livestreaming","etherpad","sharedvideo","settings","raisehand","videoquality","filmstrip","invite","feedback","stats","shortcuts","tileview","videobackgroundblur","download","help","mute-everyone","security"]`;
 
   return (

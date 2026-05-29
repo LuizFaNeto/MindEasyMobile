@@ -56,8 +56,24 @@ public class AuthenticationController {
                 "email", paciente.getEmail()
             ));
         } catch (Exception e) {
-            // Se não for paciente (ex: terapeuta), retorna só o token
-            return ResponseEntity.ok(Map.of("token", token));
+            try {
+                // Se não for paciente, tenta buscar como terapeuta
+                com.br.mindeasy.model.Terapeuta terapeuta = com.br.mindeasy.service.TerapeutaService.class.cast(
+                    org.springframework.web.context.support.WebApplicationContextUtils.getWebApplicationContext(
+                        ((org.springframework.web.context.request.ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes()).getRequest().getServletContext()
+                    ).getBean(com.br.mindeasy.service.TerapeutaService.class)
+                ).buscarPorEmail(username);
+                
+                return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "id", terapeuta.getId(),
+                    "nome", terapeuta.getNome(),
+                    "email", terapeuta.getEmail()
+                ));
+            } catch (Exception ex) {
+                // Se falhar também, retorna só o token
+                return ResponseEntity.ok(Map.of("token", token));
+            }
         }
     }
 }
