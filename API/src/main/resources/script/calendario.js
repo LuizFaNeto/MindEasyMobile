@@ -11,75 +11,75 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalContent = document.getElementById("event-modal-content");
 
   const currentDate = new Date();
-  const tasks = JSON.parse(localStorage.getItem("tasks")) || {};
+  
+  // Agendamentos mapeados por data
+  let appointmentsByDate = {};
 
-  function saveTasks() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+  async function fetchAgendamentos() {
+      const token = localStorage.getItem('mindeasy_token');
+      const terapeutaId = localStorage.getItem('mindeasy_user_id');
+
+      if (!token || !terapeutaId) {
+          alert('Sessão inválida. Faça login novamente.');
+          window.location.href = 'cadastro.html';
+          return;
+      }
+
+      try {
+          const response = await axios.get(`http://localhost:8080/api/agendamentos/terapeutas/${terapeutaId}`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+          
+          const agendamentos = response.data;
+          appointmentsByDate = {}; // reseta
+          
+          agendamentos.forEach(app => {
+              if (app.data) {
+                  // data formato: "YYYY-MM-DD"
+                  const [ano, mes, dia] = app.data.split('-');
+                  // dateKey = "D/M/YYYY" para combinar com a lógica existente
+                  const dateKey = `${parseInt(dia)}/${parseInt(mes)}/${ano}`;
+                  
+                  if (!appointmentsByDate[dateKey]) {
+                      appointmentsByDate[dateKey] = [];
+                  }
+                  appointmentsByDate[dateKey].push(app);
+              }
+          });
+          
+          renderCalendar();
+      } catch (error) {
+          console.error("Erro ao buscar agendamentos", error);
+      }
   }
 
   function openModal(dateKey) {
-    modalContent.innerHTML = `
-      <h3>Adicionar tarefa para ${dateKey}</h3>
-
-      <input id="task-input" class="form-control mt-2" placeholder="Descrição da tarefa">
-
-      <button id="add-task-btn" class="btn btn-primary mt-3 w-100">
-        Adicionar
-      </button>
-
-      <hr>
-
-      <h4>Tarefas</h4>
-      <div id="task-list"></div>
-    `;
-
-    loadTaskList(dateKey);
-
-    document.getElementById("add-task-btn").addEventListener("click", () => {
-      const input = document.getElementById("task-input");
-      const text = input.value.trim();
-      if (!text) return;
-
-      if (!tasks[dateKey]) tasks[dateKey] = [];
-      tasks[dateKey].push(text);
-
-      input.value = "";
-      saveTasks();
-      loadTaskList(dateKey);
-      renderCalendar();
-    });
-
-    taskModal.style.display = "block";
-  }
-
-  function loadTaskList(dateKey) {
-    const list = document.getElementById("task-list");
-    list.innerHTML = "";
-
-    if (!tasks[dateKey] || tasks[dateKey].length === 0) {
-      list.innerHTML = "<p class='text-muted'>Nenhuma tarefa.</p>";
-      return;
+    const apps = appointmentsByDate[dateKey] || [];
+    
+    let html = `<h3>Consultas em ${dateKey}</h3>`;
+    
+    if (apps.length === 0) {
+        html += `<p class='text-muted'>Nenhuma consulta para este dia.</p>`;
+    } else {
+        html += `<div id="task-list">`;
+        apps.forEach(app => {
+            let statusCor = "#64748B";
+            if(app.status === 'AGENDADO') statusCor = '#3B82F6';
+            if(app.status === 'REALIZADO') statusCor = '#10B981';
+            if(app.status === 'CANCELADO') statusCor = '#EF4444';
+            
+            html += `
+                <div class="task-card" style="border-left: 4px solid ${statusCor}; display: flex; flex-direction: column; align-items: flex-start; padding: 10px; margin-bottom: 10px;">
+                    <strong>${app.horaInicio ? app.horaInicio.slice(0,5) : '--:--'} - Paciente: ${app.nomePaciente || 'Desconhecido'}</strong>
+                    <span style="color: ${statusCor}; font-size: 12px; font-weight: bold; margin-top: 5px;">${app.status || 'INDETERMINADO'}</span>
+                </div>
+            `;
+        });
+        html += `</div>`;
     }
 
-    tasks[dateKey].forEach((task, index) => {
-      const card = document.createElement("div");
-      card.classList.add("task-card");
-
-      card.innerHTML = `
-        <span>${task}</span>
-        <button class="delete-task-btn">&times;</button>
-      `;
-
-      card.querySelector(".delete-task-btn").addEventListener("click", () => {
-        tasks[dateKey].splice(index, 1);
-        if (tasks[dateKey].length === 0) delete tasks[dateKey];
-        saveTasks();
-        loadTaskList(dateKey);
-        renderCalendar();
-      });
-
-      list.appendChild(card);
-    });
+    modalContent.innerHTML = html;
+    taskModal.style.display = "block";
   }
 
   closeModalBtn.onclick = () => {
@@ -125,11 +125,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const taskContainer = div.querySelector(".day-tasks");
 
-      if (tasks[dateKey]) {
-        tasks[dateKey].forEach((t) => {
+      if (appointmentsByDate[dateKey]) {
+        appointmentsByDate[dateKey].forEach((app) => {
           const badge = document.createElement("span");
           badge.classList.add("task-badge");
-          badge.textContent = "• " + t;
+          badge.style.backgroundColor = app.status === 'AGENDADO' ? '#e0f2fe' : '#f1f5f9';
+          badge.style.color = app.status === 'AGENDADO' ? '#0369a1' : '#475569';
+          badge.textContent = `• ${app.horaInicio ? app.horaInicio.slice(0,5) : ''} - ${app.nomePaciente || 'Paciente'}`;
           taskContainer.appendChild(badge);
         });
       }
@@ -151,4 +153,5 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   renderCalendar();
+  fetchAgendamentos(); // Busca os dados da API ao carregar
 });
