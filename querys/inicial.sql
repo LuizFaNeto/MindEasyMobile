@@ -91,4 +91,4 @@ CREATE TABLE IF NOT EXISTS feedbacks (
   CONSTRAINT fk_feedback_paciente
     FOREIGN KEY (paciente_id) REFERENCES pacientes(id)
     ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB;

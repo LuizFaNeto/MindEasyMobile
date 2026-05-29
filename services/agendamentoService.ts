@@ -6,11 +6,12 @@ export type StatusAgendamento = 'AGENDADO' | 'CANCELADO' | 'REALIZADO' | 'FALTOU
 export interface AgendamentoPayload {
   pacienteId: number;
   terapeutaId: number;
-  data: string;
-  horaInicio: string;
+  data: string;        // YYYY-MM-DD
+  horaInicio: string;  // HH:mm:ss
   status?: StatusAgendamento;
 }
 
+// Campos retornados pela API (AgendamentoResponseDTO.java)
 export interface AgendamentoResponse {
   id: number;
   nomePaciente: string;
@@ -22,6 +23,7 @@ export interface AgendamentoResponse {
   avaliacaoComentario?: string;
 }
 
+// POST /api/agendamentos
 export async function criarAgendamento(payload: AgendamentoPayload): Promise<AgendamentoResponse> {
   const response = await api.post<AgendamentoResponse>('/api/agendamentos', payload);
   return response.data;
@@ -51,6 +53,7 @@ export async function buscarAgendamentoPorId(id: number): Promise<AgendamentoRes
   return response.data;
 }
 
+// DELETE /api/agendamentos/{id}
 export async function cancelarAgendamento(id: number): Promise<void> {
   await api.delete(`/api/agendamentos/${id}`);
 }

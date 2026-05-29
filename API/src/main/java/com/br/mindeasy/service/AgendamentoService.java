@@ -3,7 +3,6 @@ package com.br.mindeasy.service;
 import com.br.mindeasy.dto.request.AgendamentoRequestDTO;
 import com.br.mindeasy.dto.response.AgendamentoResponseDTO;
 import com.br.mindeasy.enums.StatusAgendamento;
-import com.br.mindeasy.enums.TipoNotificacao;
 import com.br.mindeasy.model.Agendamento;
 import com.br.mindeasy.model.Paciente;
 import com.br.mindeasy.model.Terapeuta;
@@ -28,18 +27,15 @@ public class AgendamentoService {
     private final AgendamentoRepository agendamentoRepository;
     private final PacienteRepository pacienteRepository;
     private final TerapeutaRepository terapeutaRepository;
-    private final NotificacaoService notificacaoService;
 
     public AgendamentoService(
         AgendamentoRepository agendamentoRepository,
         PacienteRepository pacienteRepository,
-        TerapeutaRepository terapeutaRepository,
-        NotificacaoService notificacaoService
+        TerapeutaRepository terapeutaRepository
     ) {
         this.agendamentoRepository = agendamentoRepository;
         this.pacienteRepository = pacienteRepository;
         this.terapeutaRepository = terapeutaRepository;
-        this.notificacaoService = notificacaoService;
     }
 
     private AgendamentoResponseDTO toResponseDTO(Agendamento agendamento, Paciente paciente, Terapeuta terapeuta) {
@@ -86,13 +82,6 @@ public class AgendamentoService {
         agendamento.setStatus(StatusAgendamento.AGENDADO);
 
         agendamentoRepository.save(agendamento);
-
-        notificacaoService.criar(
-            paciente.getId(),
-            TipoNotificacao.APPOINTMENT,
-            "Consulta agendada",
-            "Sua consulta com " + terapeuta.getNome() + " foi marcada para " + dto.getData() + " às " + dto.getHoraInicio() + "."
-        );
 
         return toResponseDTO(agendamento, paciente, terapeuta);
     }
