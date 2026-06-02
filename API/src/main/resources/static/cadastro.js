@@ -34,6 +34,11 @@ formLogin.addEventListener('submit', e => {
 
           // Guarda o token no navegador
           localStorage.setItem('mindeasy_token', res.data.token);
+          
+          // Guarda o ID do terapeuta para usar no calendário
+          if (res.data.id) {
+              localStorage.setItem('mindeasy_user_id', res.data.id);
+          }
 
           // ADICIONADO: Redireciona o usuário para o menu principal
           window.location.href = 'menu.html';

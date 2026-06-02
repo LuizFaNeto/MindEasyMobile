@@ -95,9 +95,11 @@
   <!-- ===== SCRIPT ===== -->
   <script>
     let pacienteSelecionado = null;
+    let pacienteIdSelecionado = null;
 
-    function selecionarPaciente(nome) {
+    function selecionarPaciente(nome, id) {
       pacienteSelecionado = nome;
+      pacienteIdSelecionado = id;
       document.getElementById("tituloChamada").innerText = "Videochamada com " + nome;
       document.getElementById("btnChamar").disabled = false;
 
@@ -107,10 +109,10 @@
     }
 
     function iniciarChamada() {
-      if (!pacienteSelecionado) return;
+      if (!pacienteIdSelecionado) return;
 
       const domain = "meet.jit.si";
-      const sala = "MindEasy_" + pacienteSelecionado.replace(/\s/g, "_");
+      const sala = "MindEasy_Paciente_" + pacienteIdSelecionado;
 
       const options = {
         roomName: sala,
@@ -168,7 +170,7 @@
         pacientes.forEach(p => {
           const div = document.createElement("div");
           div.classList.add("contact");
-          div.onclick = () => selecionarPaciente(p.nome);
+          div.onclick = (event) => selecionarPaciente(p.nome, p.id);
 
           div.innerHTML = `
             <img src="https://via.placeholder.com/40" alt="Paciente">

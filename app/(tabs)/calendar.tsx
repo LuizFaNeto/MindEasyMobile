@@ -38,13 +38,6 @@ export default function CalendarScreen() {
     }
     setLoading(true);
     setError('');
-    if (!pacienteId) {
-      setAppointments([]);
-      setError('Sessão expirada. Faça login novamente.');
-      setLoading(false);
-      return;
-    }
-
     listarAgendamentosPorPaciente(pacienteId)
       .then((data) => setAppointments(data))
       .catch(() => setError('Não foi possível carregar os agendamentos.'))
@@ -178,12 +171,11 @@ export default function CalendarScreen() {
                   </View>
                 </View>
 
-                {/* Botão de entrar só aparece para agendamentos ativos */}
                 {item.status === 'AGENDADO' && (
                   <View style={styles.footer}>
                     <Button
                       mode="contained"
-                      onPress={() => router.push({ pathname: '/call/[id]', params: { id: String(item.id), nome: item.nomeTerapeuta } })}
+                      onPress={() => router.push({ pathname: '/call/[id]', params: { id: String(pacienteId), nome: item.nomeTerapeuta } })}
                       style={[styles.button, { backgroundColor: theme.tint }]}
                       icon={() => <Video size={18} color="#fff" />}
                     >
