@@ -21,7 +21,7 @@ jobs:
           cache: npm
 
       - name: Instalar dependências
-        run: npm install
+        run: npm ci
 
       - name: Rodar testes unitários
         run: npm run test:unit -- --watchAll=false --ci --forceExit

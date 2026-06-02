@@ -27,15 +27,18 @@ public class AgendamentoService {
     private final AgendamentoRepository agendamentoRepository;
     private final PacienteRepository pacienteRepository;
     private final TerapeutaRepository terapeutaRepository;
+    private final NotificacaoService notificacaoService;
 
     public AgendamentoService(
         AgendamentoRepository agendamentoRepository,
         PacienteRepository pacienteRepository,
-        TerapeutaRepository terapeutaRepository
+        TerapeutaRepository terapeutaRepository,
+        NotificacaoService notificacaoService
     ) {
         this.agendamentoRepository = agendamentoRepository;
         this.pacienteRepository = pacienteRepository;
         this.terapeutaRepository = terapeutaRepository;
+        this.notificacaoService = notificacaoService;
     }
 
     private AgendamentoResponseDTO toResponseDTO(Agendamento agendamento, Paciente paciente, Terapeuta terapeuta) {
@@ -81,9 +84,11 @@ public class AgendamentoService {
         agendamento.setHoraInicio(dto.getHoraInicio());
         agendamento.setStatus(StatusAgendamento.AGENDADO);
 
-        agendamentoRepository.save(agendamento);
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
-        return toResponseDTO(agendamento, paciente, terapeuta);
+        notificacaoService.criarNotificacaoAgendamento(agendamentoSalvo);
+
+        return toResponseDTO(agendamentoSalvo, paciente, terapeuta);
     }
 
     public AgendamentoResponseDTO buscarPorId(Long id) {
@@ -132,9 +137,11 @@ public class AgendamentoService {
             agendamento.setStatus(dto.getStatus());
         }
 
-        agendamentoRepository.save(agendamento);
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
-        return toResponseDTO(agendamento, paciente, terapeuta);
+        notificacaoService.criarNotificacaoAgendamento(agendamentoSalvo);
+
+        return toResponseDTO(agendamentoSalvo, paciente, terapeuta);
     }
 
     public AgendamentoResponseDTO atualizarParcial(Long id, AgendamentoRequestDTO dto) {
