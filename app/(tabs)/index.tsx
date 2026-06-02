@@ -1,13 +1,13 @@
-import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { Bell, Search, SlidersHorizontal, Star, X } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { Bell, Search, SlidersHorizontal, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { Badge, Button, Modal, Portal, Text } from 'react-native-paper';
 import Colors from '../../constants/Colors';
-import { useUserStore } from '../../store/userStore';
+import * as notificacaoService from '../../services/notificacaoService';
 import { listarTerapeutas, TerapeutaResponse } from '../../services/terapeutaService';
-import { notificacaoService } from '../../services/notificacaoService';
+import { useUserStore } from '../../store/userStore';
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
