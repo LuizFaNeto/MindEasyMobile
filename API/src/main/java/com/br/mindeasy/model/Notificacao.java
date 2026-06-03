@@ -30,8 +30,15 @@ public class Notificacao {
     @Column(nullable = false)
     private boolean lida = false;
 
-    @Column(nullable = false)
+    @Column(name = "criada_em", nullable = false)
     private LocalDateTime criadaEm = LocalDateTime.now();
+
+    @PrePersist
+    public void prePersist() {
+        if (criadaEm == null) {
+            criadaEm = LocalDateTime.now();
+        }
+    }
 
     public Notificacao() {}
 

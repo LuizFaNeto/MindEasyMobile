@@ -12,7 +12,19 @@ export interface NotificacaoDTO {
   criadaEm: string;
 }
 
+export interface CriarNotificacaoPayload {
+  pacienteId: number;
+  tipo: NotificationType;
+  titulo: string;
+  descricao: string;
+}
+
 export const notificacaoService = {
+  async criar(payload: CriarNotificacaoPayload): Promise<NotificacaoDTO> {
+    const { data } = await api.post<NotificacaoDTO>('/api/notificacoes', payload);
+    return data;
+  },
+
   async listarPorPaciente(pacienteId: number): Promise<NotificacaoDTO[]> {
     const { data } = await api.get<NotificacaoDTO[]>(`/api/notificacoes/pacientes/${pacienteId}`);
     return data;

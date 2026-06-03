@@ -1,8 +1,8 @@
-CREATE DATABASE IF NOT EXISTS mindeasy
+CREATE DATABASE IF NOT EXISTS mind_easy
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE mindeasy;
+USE mind_easy;
 
 -- =========================
 -- PACIENTES
@@ -92,3 +92,23 @@ CREATE TABLE IF NOT EXISTS feedbacks (
     FOREIGN KEY (paciente_id) REFERENCES pacientes(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB;
+-- =========================
+-- NOTIFICAÇÕES
+-- =========================
+CREATE TABLE IF NOT EXISTS notificacoes (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  paciente_id BIGINT NOT NULL,
+  tipo VARCHAR(30) NOT NULL,
+  titulo VARCHAR(120) NOT NULL,
+  descricao VARCHAR(500) NOT NULL,
+  lida BOOLEAN NOT NULL DEFAULT FALSE,
+  criada_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_notificacao_paciente
+    FOREIGN KEY (paciente_id) REFERENCES pacientes(id)
+    ON DELETE CASCADE,
+
+  INDEX idx_notificacoes_paciente_criada (paciente_id, criada_em),
+  INDEX idx_notificacoes_paciente_lida (paciente_id, lida)
+) ENGINE=InnoDB;
+

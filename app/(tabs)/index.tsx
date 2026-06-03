@@ -1,11 +1,13 @@
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { Bell, Search, SlidersHorizontal, Star, X } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { Badge, Button, Modal, Portal, Text } from 'react-native-paper';
 import Colors from '../../constants/Colors';
 import { useUserStore } from '../../store/userStore';
 import { listarTerapeutas, TerapeutaResponse } from '../../services/terapeutaService';
+import { notificacaoService } from '../../services/notificacaoService';
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,9 +17,31 @@ export default function HomeScreen() {
   const [terapeutas, setTerapeutas] = useState<TerapeutaResponse[]>([]);
   const [loadingTerapeutas, setLoadingTerapeutas] = useState(true);
   const [apiError, setApiError] = useState('');
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   const name = useUserStore((state) => state.name);
+  const pacienteId = useUserStore((state) => state.id);
   const router = useRouter();
+
+  const carregarContadorNotificacoes = useCallback(async () => {
+    if (!pacienteId) {
+      setUnreadNotifications(0);
+      return;
+    }
+
+    try {
+      const total = await notificacaoService.contarNaoLidas(pacienteId);
+      setUnreadNotifications(total);
+    } catch {
+      setUnreadNotifications(0);
+    }
+  }, [pacienteId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarContadorNotificacoes();
+    }, [carregarContadorNotificacoes])
+  );
 
   // Carrega terapeutas da API ao montar a tela
   useEffect(() => {
@@ -114,7 +138,11 @@ export default function HomeScreen() {
             onPress={() => router.push('/notifications')}
           >
             <Bell size={28} color={Colors.light.primary} />
-            <Badge size={18} style={styles.badge}>2</Badge>
+            {unreadNotifications > 0 && (
+              <Badge size={18} style={styles.badge}>
+                {unreadNotifications > 99 ? '99+' : unreadNotifications}
+              </Badge>
+            )}
           </TouchableOpacity>
         </View>
 
