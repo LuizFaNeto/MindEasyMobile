@@ -101,23 +101,26 @@ body {
 /* ===== LAYOUT PRINCIPAL ===== */
 .main-container {
     display: flex;
-    margin-left: 0; /* espaço da sidebar */
-    height: 100vh;
+    justify-content: center;   /* centraliza horizontalmente */
+    align-items: center;       /* centraliza verticalmente */
+    height: 100vh;             /* ocupa toda a altura da tela */
     width: 100%;
     transition: margin-left 0.3s, width 0.3s;
 }
 
-.wrap{
-    max-width:900px;
-    margin:32px auto;
-    padding:0 16px
+.wrap {
+    max-width: 900px;
+    width: 100%;
+    padding: 0 16px;
 }
-        
-.card{
-    background:#fff;           /* antes #141820 */
-    border:1px solid #ddd;     /* antes #232936 */
-    border-radius:16px;
-    padding:16px
+
+.card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;        /* centraliza título e gráfico */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 h1{

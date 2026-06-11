@@ -1,6 +1,6 @@
 // ========= Sidebar hover =========
 const sidebar = document.querySelector('.sidebar');
-const handle  = document.getElementById('sidebar-handle');
+const handle = document.getElementById('sidebar-handle');
 handle?.addEventListener('mouseenter', () => sidebar?.classList.add('shown'));
 sidebar?.addEventListener('mouseleave', () => sidebar?.classList.remove('shown'));
 
@@ -8,7 +8,7 @@ sidebar?.addEventListener('mouseleave', () => sidebar?.classList.remove('shown')
 const BASE_URL = 'http://localhost:8080';
 const token = localStorage.getItem('mindeasy_token');
 const auth = token ? { Authorization: `Bearer ${token}` } : {};
-const TERAPEUTA_ID = 1; 
+const TERAPEUTA_ID = 1;
 
 //Sem token volta para o Login
 if (!token) {
@@ -41,25 +41,24 @@ function renderStars(container, media, max = 5) {
 // ========= API =========
 async function getTerapeuta(id) {
   const { data } = await axios.get(`${BASE_URL}/api/terapeutas/${id}`, {
-    headers: { auth }
+    headers: { Authorization: `Bearer ${token}` }
   });
   return data;
 }
 
 async function getAgendamentosPorTerapeuta(id) {
   const { data } = await axios.get(`${BASE_URL}/api/agendamentos/terapeutas/${id}`, {
-    headers: { auth }
+    headers: { Authorization: `Bearer ${token}` }
   });
   return data;
 }
 
-//Teste de log, mostra o token que foi carregado
-console.log('Token?', token && token.slice(0,20) + '...');
-
-axios.interceptors.request.use(cfg => {
-  console.log('➡️', cfg.method?.toUpperCase(), cfg.url, 'Auth?', !!cfg.headers?.Authorization);
-  return cfg;
-});
+// ========= Helpers =========
+function getInitials(nome) {
+  return nome.split(' ')
+    .map(p => p[0].toUpperCase())
+    .join('');
+}
 
 // ========= Preenche tela =========
 async function carregarPerfil() {
@@ -73,6 +72,9 @@ async function carregarPerfil() {
       : (t.crm ? `CRM ${t.crm}` : 'Profissional da saúde');
     document.getElementById('terapeuta-descricao').textContent = desc;
 
+    // Avatar com iniciais
+    document.getElementById('foto-terapeuta').textContent = getInitials(t.nome || 'T');
+
     // Especialidades
     const espWrap = document.getElementById('especialidades');
     espWrap.innerHTML = '';
@@ -81,13 +83,13 @@ async function carregarPerfil() {
     badge.textContent = t.especialidade || 'Sem especialidade cadastrada';
     espWrap.appendChild(badge);
 
-    // Sobre mim (placeholder por enquanto)
+    // Sobre mim
     document.getElementById('sobre-mim').textContent =
       'Informações do perfil ainda não preenchidas. Edite seu perfil para adicionar uma descrição.';
 
     // Média de avaliações
     const ags = await getAgendamentosPorTerapeuta(TERAPEUTA_ID);
-    const comNota = ags.filter(a => a.avaliacaoNota != null /* && a.status === 'REALIZADO' */);
+    const comNota = ags.filter(a => a.avaliacaoNota != null);
     let media = 0;
     if (comNota.length) {
       media = comNota.reduce((acc, cur) => acc + Number(cur.avaliacaoNota), 0) / comNota.length;
