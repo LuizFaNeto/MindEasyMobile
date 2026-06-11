@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
   <!-- Ícones do Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -20,7 +22,6 @@
     <ul>
       <li><a href="calendario.html"><i class="fa-regular fa-calendar"></i> Agenda</a></li>
       <li><a href="menu.html"><i class="fa-regular fa-star"></i> Serviços</a></li>
-      <li><a href="chat.html"><i class="fa-regular fa-comment"></i> Chat</a></li>
       <li><a href="videoChamada.html"><i class="fa-solid fa-video"></i> Videochamada</a></li>
       <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
     </ul>
@@ -35,15 +36,13 @@
   <!-- Conteúdo Principal -->
   <div class="main">
     <div class="container">
-      
+
       <!-- Cabeçalho do Perfil -->
       <div class="card profile-header">
-<img src="https://i.pravatar.cc/120?img=56" alt="Foto do Terapeuta" class="profile-pic" id="foto-terapeuta">
+        <div class="profile-pic" id="foto-terapeuta"></div>
         <div class="profile-info">
-          <h1 id="terapeuta-nome">Dr Fernando Gustavo Farias Alencar</h1>
-          <p id="terapeuta-descriao">
-             Psicólogo especializado em ansiedade, depressão e desenvolvimento pessoal.
-          </p>
+          <h1 id="terapeuta-nome">Terapeuta</h1>
+          <p id="terapeuta-descricao"></p>
 
           <!--Nota média -->
           <div id="rating" style="margin-top:8px; display:flex; align-items:center; gap:8px;">
@@ -52,16 +51,17 @@
           </div>
         </div>
         <div class="profile-actions">
-         <a href="chat.html" class="btn-custom btn-primary-custom">Enviar Mensagem</a>
+          <a href="chat.html" class="btn-custom btn-primary-custom">Enviar Mensagem</a>
           <a href="calendario.html" class="btn-custom btn-primary-custom">Agendar Consulta</a>
         </div>
       </div>
-      
+
+
       <!-- Detalhes do Perfil -->
       <div class="card profile-details">
         <h2>Sobre Mim</h2>
-        <p id="sobre-mim">Sou psicólogo clínico com mais de 6 anos de experiência no atendimento de jovens e adultos. 
-          Utilizo a Terapia Cognitivo-Comportamental (TCC) para auxiliar meus pacientes a compreenderem 
+        <p id="sobre-mim">Sou psicólogo clínico com mais de 6 anos de experiência no atendimento de jovens e adultos.
+          Utilizo a Terapia Cognitivo-Comportamental (TCC) para auxiliar meus pacientes a compreenderem
           melhor seus pensamentos e emoções, promovendo autoconhecimento e qualidade de vida.</p>
 
         <h2 class="mt-4">Especialidades</h2>
@@ -77,4 +77,5 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="../script/perfilTerapeuta.js"></script>
 </body>
+
 </html>
